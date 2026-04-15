@@ -1,285 +1,558 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>蓝信单点登录 Demo</title>
-  <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      min-height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 20px;
-    }
-    .container {
-      background: #fff;
-      border-radius: 16px;
-      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-      padding: 40px;
-      max-width: 500px;
-      width: 100%;
-      text-align: center;
-    }
-    h1 {
-      color: #333;
-      margin-bottom: 10px;
-      font-size: 24px;
-    }
-    .subtitle {
-      color: #666;
-      margin-bottom: 30px;
-      font-size: 14px;
-    }
-    .badge {
-      display: inline-block;
-      background: #f0f2f5;
-      color: #555;
-      padding: 4px 12px;
-      border-radius: 20px;
-      font-size: 12px;
-      margin: 2px;
-    }
-    
-    /* 登录区域 */
-    #login-area {
-      margin: 30px 0;
-    }
-    #qrauth-container {
-      width: 300px;
-      height: 320px;
-      margin: 0 auto;
-      border: 1px solid #eee;
-      border-radius: 8px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: #fafafa;
-    }
-    .loading { color: #666; font-size: 14px; }
-    
-    /* 用户信息面板 */
-    #user-panel {
-      display: none;
-      text-align: left;
-      padding: 20px;
-      background: #f8f9ff;
-      border-radius: 12px;
-      margin-top: 20px;
-    }
-    #user-panel.show { display: block; animation: fadeIn 0.3s; }
-    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-    
-    .user-row {
-      display: flex;
-      align-items: center;
-      padding: 8px 0;
-      border-bottom: 1px dashed #eee;
-    }
-    .user-row:last-child { border-bottom: none; }
-    .user-label { width: 70px; color: #666; font-size: 14px; }
-    .user-value { flex: 1; color: #333; font-weight: 500; }
-    
-    .btn {
-      display: inline-block;
-      background: #667eea;
-      color: #fff;
-      border: none;
-      padding: 10px 24px;
-      border-radius: 8px;
-      font-size: 14px;
-      cursor: pointer;
-      margin-top: 15px;
-      transition: background 0.2s;
-    }
-    .btn:hover { background: #5568d3; }
-    .btn-outline {
-      background: transparent;
-      border: 1px solid #667eea;
-      color: #667eea;
-    }
-    .btn-outline:hover { background: #f0f2ff; }
-    
-    /* 状态提示 */
-    #status {
-      margin-top: 15px;
-      font-size: 13px;
-      min-height: 20px;
-    }
-    .status-error { color: #e74c3c; }
-    .status-success { color: #27ae60; }
-    
-    /* 配置提示 */
-    .config-notice {
-      background: #fff3cd;
-      border: 1px solid #ffc107;
-      color: #856404;
-      padding: 12px;
-      border-radius: 8px;
-      font-size: 12px;
-      text-align: left;
-      margin-bottom: 20px;
-    }
-    .config-notice code {
-      background: #f8f9fa;
-      padding: 2px 6px;
-      border-radius: 4px;
-      font-family: monospace;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>企业单点登录 - 蓝信接入</title>
+    <style>
+        /* CSS Reset & Variables */
+        :root {
+            --primary-color: #0086F0; /* 蓝信标准蓝 */
+            --primary-hover: #006BC2;
+            --bg-color: #F5F7FA;
+            --card-bg: #FFFFFF;
+            --text-main: #333333;
+            --text-sub: #666666;
+            --border-color: #E1E4E8;
+            --success-color: #28A745;
+            --error-color: #DC3545;
+            --shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            --radius: 8px;
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            background-image: radial-gradient(circle at 10% 20%, rgb(239, 246, 255) 0%, rgb(255, 255, 255) 90%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            color: var(--text-main);
+        }
+
+        /* Main Layout */
+        .login-container {
+            width: 100%;
+            max-width: 400px;
+            padding: 20px;
+        }
+
+        .login-card {
+            background: var(--card-bg);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            padding: 40px 30px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            transition: var(--transition);
+        }
+
+        /* Header Section */
+        .logo-area {
+            margin-bottom: 30px;
+        }
+
+        .logo-icon {
+            width: 64px;
+            height: 64px;
+            background: rgba(0, 134, 240, 0.1);
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary-color);
+            margin-bottom: 16px;
+        }
+
+        .logo-icon svg {
+            width: 32px;
+            height: 32px;
+        }
+
+        h1 {
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: var(--text-main);
+        }
+
+        p.subtitle {
+            font-size: 14px;
+            color: var(--text-sub);
+        }
+
+        /* Form Elements */
+        .action-area {
+            margin-top: 30px;
+        }
+
+        .btn-lanxin {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            font-size: 16px;
+            font-weight: 500;
+            border-radius: var(--radius);
+            cursor: pointer;
+            transition: var(--transition);
+            text-decoration: none;
+            box-shadow: 0 2px 6px rgba(0, 134, 240, 0.3);
+        }
+
+        .btn-lanxin:hover {
+            background-color: var(--primary-hover);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(0, 134, 240, 0.4);
+        }
+
+        .btn-lanxin:active {
+            transform: translateY(0);
+        }
+
+        .btn-lanxin svg {
+            margin-right: 10px;
+            width: 20px;
+            height: 20px;
+            fill: currentColor;
+        }
+
+        .btn-lanxin:disabled {
+            background-color: #A0CFFF;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        /* Footer / Config Toggle */
+        .footer {
+            margin-top: 20px;
+            font-size: 12px;
+            color: #999;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .config-toggle {
+            color: var(--primary-color);
+            cursor: pointer;
+            text-decoration: underline;
+            background: none;
+            border: none;
+            font-size: 12px;
+            padding: 0;
+        }
+
+        /* Configuration Panel (Dev Only) */
+        .config-panel {
+            margin-top: 20px;
+            background: #F8F9FA;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius);
+            padding: 15px;
+            text-align: left;
+            display: none; /* Hidden by default */
+        }
+
+        .config-panel.active {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .form-group {
+            margin-bottom: 12px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 12px;
+            font-weight: 600;
+            margin-bottom: 4px;
+            color: var(--text-sub);
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            font-size: 13px;
+            outline: none;
+        }
+
+        .form-group input:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 2px rgba(0, 134, 240, 0.1);
+        }
+
+        .btn-secondary {
+            background-color: #fff;
+            border: 1px solid var(--border-color);
+            color: var(--text-main);
+            padding: 6px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            margin-top: 8px;
+        }
+
+        .btn-secondary:hover {
+            background-color: #f0f0f0;
+        }
+
+        /* Loading Spinner */
+        .spinner {
+            width: 18px;
+            height: 18px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: #fff;
+            animation: spin 0.8s linear infinite;
+            margin-right: 8px;
+            display: none;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-5px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Success State */
+        .success-view {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .success-icon {
+            color: var(--success-color);
+            margin-bottom: 15px;
+        }
+
+        /* Toast Notification */
+        .toast-container {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 1000;
+        }
+
+        .toast {
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 50px;
+            font-size: 14px;
+            margin-bottom: 10px;
+            opacity: 0;
+            transform: translateY(-20px);
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+
+        .toast.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .toast.error {
+            background: var(--error-color);
+        }
+
+        .toast.success {
+            background: var(--success-color);
+        }
+    </style>
 </head>
 <body>
-  <div class="container">
-    <h1>🔐 蓝信单点登录 Demo</h1>
-    <div class="subtitle">
-      <span class="badge">GitHub Pages</span>
-      <span class="badge">HTTPS</span>
-      <span class="badge">腾讯云函数</span>
-    </div>
-    
-    <!-- ⚠️ 配置提示（部署后建议删除）-->
-    <div class="config-notice">
-      <strong>🔧 部署前请确认：</strong><br>
-      1. 修改代码中的 <code>BACKEND_URL</code> 为你的云函数地址<br>
-      2. 修改 <code>LANXIN_CONFIG</code> 为你的蓝信应用参数
-    </div>
-    
-    <!-- 登录区域 -->
-    <div id="login-area">
-      <div id="qrauth-container">
-        <div class="loading">⏳ 正在加载二维码...</div>
-      </div>
-      <div id="status"></div>
-    </div>
-    
-    <!-- 用户信息面板（登录成功后显示）-->
-    <div id="user-panel">
-      <h3 style="margin-bottom: 15px; color: #333;">✅ 登录成功</h3>
-      <div class="user-row">
-        <span class="user-label">👤 姓名</span>
-        <span class="user-value" id="user-name">-</span>
-      </div>
-      <div class="user-row">
-        <span class="user-label">📱 手机</span>
-        <span class="user-value" id="user-mobile">-</span>
-      </div>
-      <div class="user-row">
-        <span class="user-label">🆔 用户ID</span>
-        <span class="user-value" id="user-id">-</span>
-      </div>
-      <button class="btn btn-outline" onclick="logout()" style="width: 100%;">🔄 重新登录</button>
-    </div>
-    
-    <!-- 操作按钮 -->
-    <div style="margin-top: 30px;">
-      <button class="btn" onclick="location.reload()">🔄 刷新页面</button>
-    </div>
-  </div>
 
-  <!-- ⚠️ 蓝信 JSSDK（请替换为你的实际域名）-->
-  <!-- 如果不确定域名，可先保留此默认值，报错后再调整 -->
-  <script src="https://user-xxx.xxx.cn/user/passport/qrauth/static/login-jssdk.js"></script>
-  
-  <script>
-    // ================= 配置区域（⚠️ 请修改这里）=================
-    
-    // 🔹 你的腾讯云函数地址（刚刚复制的那个）
-    const BACKEND_URL = 'https://1422359745-233asqikpd.ap-guangzhou.tencentscf.com';
-    
-    // 🔹 蓝信应用配置（从蓝信开放平台获取）
-    const LANXIN_CONFIG = {
-      oauthUrl: 'https://user-stage.e.lanxin.cn/user/passport',  // ⚠️ 授权页地址
-      appId: 9183488,      // ⚠️ 应用ID（取-后面的数字）
-      orgId: 14803712             // ⚠️ 组织ID
-    };
-    
-    // ================= 业务逻辑（无需修改）=================
-    
-    const statusEl = document.getElementById('status');
-    const loginArea = document.getElementById('login-area');
-    const userPanel = document.getElementById('user-panel');
-    
-    // 显示状态消息
-    function showStatus(msg, type = 'info') {
-      statusEl.textContent = msg;
-      statusEl.className = type === 'error' ? 'status-error' : 
-                          type === 'success' ? 'status-success' : '';
-    }
-    
-    // 初始化蓝信扫码登录
-    function initLanxinLogin() {
-      // 检查 SDK 是否加载
-      if (typeof LxLogin !== 'function') {
-        showStatus('❌ 蓝信 SDK 加载失败，请检查网络或域名配置', 'error');
-        console.error('LxLogin not found. Please check the SDK URL.');
-        return;
-      }
-      
-      LxLogin({
-        oauthUrl: LANXIN_CONFIG.oauthUrl,
-        appId: LANXIN_CONFIG.appId,
-        orgId: LANXIN_CONFIG.orgId,
-        containerId: 'qrauth-container',
-        success: async function(res) {
-          const { code } = res;
-          showStatus('⏳ 正在验证登录...', 'info');
-          
-          try {
-            // 调用你的云函数后端
-            const response = await fetch(BACKEND_URL, {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ code })
-            });
+    <div class="toast-container" id="toastContainer"></div>
+
+    <div class="login-container">
+        <div class="login-card">
+            <!-- 登录前视图 -->
+            <div id="loginView">
+                <div class="logo-area">
+                    <div class="logo-icon">
+                        <!-- Shield/Lock Icon -->
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                        </svg>
+                    </div>
+                    <h1>欢迎登录</h1>
+                    <p class="subtitle">使用蓝信账号安全登录</p>
+                </div>
+
+                <div class="action-area">
+                    <button class="btn-lanxin" id="btnLogin" onclick="handleLogin()">
+                        <div class="spinner" id="loginSpinner"></div>
+                        <span id="btnText">蓝信单点登录</span>
+                    </button>
+                </div>
+
+                <div class="footer">
+                    <span>安全认证系统</span>
+                    <button class="config-toggle" onclick="toggleConfig()">开发者配置</button>
+                </div>
+
+                <!-- 开发者配置面板 -->
+                <div class="config-panel" id="configPanel">
+                    <div class="form-group">
+                        <label for="appId">App ID (应用ID)</label>
+                        <input type="text" id="appId" placeholder="输入蓝信 AppID" value="">
+                    </div>
+                    <div class="form-group">
+                        <label for="redirectUri">Redirect URI (回调地址)</label>
+                        <input type="text" id="redirectUri" placeholder="当前页面 URL">
+                    </div>
+                    <div class="form-group">
+                        <label for="authDomain">授权域名</label>
+                        <!-- 根据你的环境，这里预填了 stage 地址 -->
+                        <input type="text" id="authDomain" value="https://open-stage.e.lanxin.cn" placeholder="蓝信授权域名">
+                    </div>
+                    <button class="btn-secondary" onclick="saveConfig()">保存配置</button>
+                    <p style="font-size: 10px; color: #999; margin-top: 5px;">
+                        *配置保存在本地，仅用于前端跳转。
+                    </p>
+                </div>
+            </div>
+
+            <!-- 登录成功视图 -->
+            <div id="successView" class="success-view">
+                <div class="success-icon">
+                    <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                        <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                    </svg>
+                </div>
+                <h2>登录成功</h2>
+                <p class="subtitle" id="userInfo">正在跳转到业务系统...</p>
+                <button class="btn-secondary" onclick="location.reload()" style="margin-top: 20px;">退出 / 重新测试</button>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        // ==========================================
+        // 1. 核心配置：你的 Cloudflare Worker 后端地址
+        // ==========================================
+        
+        // 【重要】请将下方引号内的内容，替换为你 Cloudflare 截图中右侧显示的完整地址
+        // 例如: 'https://lanxin-backend.zhb6636.workers.dev'
+        const WORKER_API_URL = 'https://lanxin-backend.你的账号后缀.workers.dev'; 
+
+
+        // 默认配置（如果用户没有配置，这里作为示例）
+        const defaultConfig = {
+            appId: '',
+            redirectUri: window.location.href.split('?')[0], // 自动获取当前页面不含参数的URL
+            authDomain: 'https://open-stage.e.lanxin.cn', // 默认使用你的测试环境
+            scope: 'snsapi_login', // 静默授权或手动授权，参考文档
+            state: 'lanxin_sso_' + Math.random().toString(36).substr(2)
+        };
+
+        // 页面加载时初始化
+        document.addEventListener('DOMContentLoaded', () => {
+            loadConfig();
+            checkCallback();
+        });
+
+        // 加载本地存储的配置
+        function loadConfig() {
+            const saved = localStorage.getItem('lanxin_sso_config');
+            let config = saved ? JSON.parse(saved) : defaultConfig;
             
-            const result = await response.json();
-            
-            if (result.success) {
-              // ✅ 登录成功，显示用户信息
-              const user = result.user;
-              document.getElementById('user-name').textContent = user.name || '-';
-              document.getElementById('user-mobile').textContent = user.mobile || '-';
-              document.getElementById('user-id').textContent = user.userId || '-';
-              
-              // 切换 UI
-              loginArea.style.display = 'none';
-              userPanel.classList.add('show');
-              showStatus('✅ 登录成功！', 'success');
-              
-              console.log('🎉 登录用户:', user);
-              // 🎯 这里可以添加：跳转页面 / 保存 token / 执行业务
-            } else {
-              throw new Error(result.error || '登录验证失败');
-            }
-          } catch (err) {
-            console.error('Login error:', err);
-            showStatus(`❌ ${err.message}`, 'error');
-          }
-        },
-        fail: function(err) {
-          console.error('LxLogin fail:', err);
-          showStatus(`❌ 扫码失败: ${err.error || '未知错误'}`, 'error');
+            document.getElementById('appId').value = config.appId;
+            document.getElementById('redirectUri').value = config.redirectUri;
+            document.getElementById('authDomain').value = config.authDomain;
         }
-      });
-    }
-    
-    // 退出登录（简单实现）
-    function logout() {
-      userPanel.classList.remove('show');
-      loginArea.style.display = 'block';
-      document.getElementById('qrauth-container').innerHTML = '<div class="loading">⏳ 重新加载...</div>';
-      showStatus('');
-      initLanxinLogin();
-    }
-    
-    // 页面加载完成后初始化
-    window.addEventListener('load', function() {
-      // 可在此处添加：检查 localStorage 是否已登录
-      initLanxinLogin();
-    });
-  </script>
+
+        // 保存配置
+        function saveConfig() {
+            const config = {
+                appId: document.getElementById('appId').value.trim(),
+                redirectUri: document.getElementById('redirectUri').value.trim(),
+                authDomain: document.getElementById('authDomain').value.trim()
+            };
+            localStorage.setItem('lanxin_sso_config', JSON.stringify(config));
+            showToast('配置已保存', 'success');
+            toggleConfig(); // 关闭面板
+        }
+
+        // 切换配置面板
+        function toggleConfig() {
+            const panel = document.getElementById('configPanel');
+            panel.classList.toggle('active');
+        }
+
+        // ==========================================
+        // 2. 核心登录逻辑 (前端部分)
+        // ==========================================
+
+        function handleLogin() {
+            const appId = document.getElementById('appId').value.trim();
+            const redirectUri = document.getElementById('redirectUri').value.trim();
+            const authDomain = document.getElementById('authDomain').value.trim();
+
+            if (!appId) {
+                showToast('请先在开发者配置中填写 App ID', 'error');
+                toggleConfig();
+                return;
+            }
+
+            // 构建 OAuth 授权 URL
+            const state = 'lanxin_sso_' + Math.random().toString(36).substr(2);
+            localStorage.setItem('lanxin_state', state); // 保存 state 用于校验
+
+            // 构造参数
+            const params = new URLSearchParams({
+                appid: appId,
+                redirect_uri: encodeURIComponent(redirectUri),
+                response_type: 'code',
+                scope: 'snsapi_login',
+                state: state
+            });
+
+            const authUrl = `${authDomain}/oauth/authorize?${params.toString()}`;
+
+            // UI 交互：显示加载中
+            const btn = document.getElementById('btnLogin');
+            const spinner = document.getElementById('loginSpinner');
+            const text = document.getElementById('btnText');
+
+            btn.disabled = true;
+            spinner.style.display = 'block';
+            text.innerText = '正在跳转...';
+
+            // 模拟延迟后跳转
+            setTimeout(() => {
+                console.log("Redirecting to:", authUrl);
+                 window.location.href = authUrl;
+            }, 800);
+        }
+
+        function resetButton() {
+            const btn = document.getElementById('btnLogin');
+            const spinner = document.getElementById('loginSpinner');
+            const text = document.getElementById('btnText');
+            btn.disabled = false;
+            spinner.style.display = 'none';
+            text.innerText = '蓝信单点登录';
+        }
+
+        // ==========================================
+        // 3. 回调处理 (对接后端)
+        // ==========================================
+
+        function checkCallback() {
+            const params = new URLSearchParams(window.location.search);
+            const code = params.get('code');
+            const state = params.get('state');
+            const savedState = localStorage.getItem('lanxin_state');
+
+            // 如果 URL 中有 code，说明是从蓝信回调回来的
+            if (code) {
+                // 1. 简单校验 State（防止 CSRF）
+                if (state && state !== savedState) {
+                    showToast('State 校验失败，请求非法', 'error');
+                    return;
+                }
+
+                // 2. 清理 URL 中的参数（保持地址栏干净）
+                window.history.replaceState({}, document.title, window.location.pathname);
+
+                // 3. 显示登录中状态
+                document.getElementById('loginView').style.display = 'none';
+                document.getElementById('successView').style.display = 'flex'; // 先显示成功界面
+
+                // 4. 关键步骤：将 code 发送给后端
+                sendCodeToBackend(code);
+            }
+        }
+
+        // 发送 Code 给后端 {
+            const infoText = document.getElementById('userInfo');
+            
+            // 检查 Worker 地址是否已配置
+            if (WORKER_API_URL.includes('你的账号后缀')) {
+                 infoText.innerText = '错误：请先修改 HTML 代码中的 WORKER_API_URL';
+                 showToast('请在代码中配置后端地址', 'error');
+                 return;
+            }
+
+            infoText.innerHTML = `已获取授权码: <b>${code.substring(0, 10)}...</b><br>正在连接服务器验证身份...`;
+
+            // 真实请求 Cloudflare Worker
+            fetch(WORKER_API_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ code: code })
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log("后端返回数据:", data);
+                
+                // 判断是否成功 (根据蓝信实际返回结构调整)
+                if (data.access_token || data.userid || data.errcode === 0) {
+                    infoText.innerHTML = `验证通过！<br>用户ID: ${data.userid || data.access_token}`;
+                    showToast('登录验证成功', 'success');
+                } else {
+                    throw new Error(data.errmsg || data.error || '未知错误');
+                }
+            })
+            .catch(error => {
+                console.error(error);
+                infoText.innerHTML = `验证失败<br>原因: ${error.message}`;
+                showToast('验证失败，请检查配置', 'error');
+            });
+        }
+
+        // ==========================================
+        // 4. 工具函数：Toast 提示
+        // ==========================================
+        function showToast(message, type = 'normal') {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            toast.innerText = message;
+            
+            container.appendChild(toast);
+            
+            // 动画显示
+            requestAnimationFrame(() => {
+                toast.classList.add('show');
+            });
+
+            // 3秒后移除
+            setTimeout(() => {
+                toast.classList.remove('show');
+                toast.addEventListener('transitionend', () => {
+                    toast.remove();
+                });
+            }, 3000);
+        }
+    </script>
 </body>
 </html>
