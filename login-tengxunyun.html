@@ -44,7 +44,6 @@
       margin: 2px;
     }
 
-    /* 登录区域 */
     #login-area {
       margin: 30px 0;
     }
@@ -61,7 +60,6 @@
     }
     .loading { color: #666; font-size: 14px; }
 
-    /* 用户信息面板 */
     #user-panel {
       display: none;
       text-align: left;
@@ -73,7 +71,6 @@
     #user-panel.show { display: block; animation: fadeIn 0.3s; }
     @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-    /* 用户头像区域 */
     .user-header {
       display: flex;
       align-items: center;
@@ -115,7 +112,6 @@
       color: #666;
     }
 
-    /* 用户信息行 */
     .user-row {
       display: flex;
       align-items: center;
@@ -127,8 +123,6 @@
       width: 80px;
       color: #666;
       font-size: 14px;
-      display: flex;
-      align-items: center;
     }
     .user-value {
       flex: 1;
@@ -136,29 +130,16 @@
       font-weight: 500;
       font-size: 14px;
       text-align: left;
+      word-break: break-all;
     }
-    .user-value.break-all { word-break: break-all; }
 
-    /* 状态标签 */
     .status-tag {
       display: inline-block;
       padding: 2px 8px;
       border-radius: 10px;
       font-size: 12px;
-    }
-    .status-active { background: #d4edda; color: #155724; }
-    .status-inactive { background: #fff3cd; color: #856404; }
-    .status-frozen { background: #cce5ff; color: #004085; }
-
-    /* 签名区域 */
-    .user-signature {
-      background: #f0f2f5;
-      padding: 10px 12px;
-      border-radius: 8px;
-      margin-top: 10px;
-      font-size: 13px;
-      color: #666;
-      font-style: italic;
+      background: #d4edda;
+      color: #155724;
     }
 
     .btn {
@@ -181,7 +162,6 @@
     }
     .btn-outline:hover { background: #f0f2ff; }
 
-    /* 状态提示 */
     #status {
       margin-top: 15px;
       font-size: 13px;
@@ -189,48 +169,25 @@
     }
     .status-error { color: #e74c3c; }
     .status-success { color: #27ae60; }
-
-    /* 配置提示 */
-    .config-notice {
-      background: #d4edda;
-      border: 1px solid #28a745;
-      color: #155724;
-      padding: 12px;
-      border-radius: 8px;
-      font-size: 12px;
-      text-align: left;
-      margin-bottom: 20px;
-    }
   </style>
 </head>
 <body>
   <div class="container">
-    <h1>🔐 蓝信单点登录 Demo</h1>
+    <h1>蓝信单点登录 Demo</h1>
     <div class="subtitle">
       <span class="badge">GitHub Pages</span>
       <span class="badge">HTTPS</span>
       <span class="badge">腾讯云函数</span>
     </div>
 
-    <!-- 配置提示 -->
-    <div class="config-notice">
-      <strong>✅ 可信域名已配置</strong><br>
-      展示丰富的用户基本信息
-    </div>
-
-    <!-- 登录区域 -->
     <div id="login-area">
       <div id="qrauth-container">
-        <div class="loading">⏳ 正在加载二维码...</div>
+        <div class="loading">正在加载二维码...</div>
       </div>
       <div id="status"></div>
     </div>
 
-    <!-- 用户信息面板（登录成功后显示）-->
     <div id="user-panel">
-      <h3 style="margin-bottom: 15px; color: #333;">✅ 登录成功</h3>
-
-      <!-- 头像和基本信息 -->
       <div class="user-header">
         <div class="user-avatar" id="user-avatar-icon">?</div>
         <img id="user-avatar-img" src="" alt="头像" style="display: none;">
@@ -240,52 +197,52 @@
         </div>
       </div>
 
-      <!-- 详细信息 -->
       <div class="user-row">
-        <span class="user-label">🆔 人员ID</span>
-        <span class="user-value break-all" id="user-id">-</span>
+        <span class="user-label">人员ID</span>
+        <span class="user-value" id="user-id">-</span>
       </div>
       <div class="user-row">
-        <span class="user-label">🏢 组织</span>
-        <span class="user-value" id="user-org-detail">-</span>
+        <span class="user-label">组织</span>
+        <span class="user-value" id="user-orgname">-</span>
       </div>
       <div class="user-row">
-        <span class="user-label">🏠 部门</span>
+        <span class="user-label">部门</span>
         <span class="user-value" id="user-dept">-</span>
       </div>
       <div class="user-row">
-        <span class="user-label">⚧ 性别</span>
-        <span class="user-value" id="user-gender">-</span>
+        <span class="user-label">手机</span>
+        <span class="user-value" id="user-mobile">-</span>
       </div>
       <div class="user-row">
-        <span class="user-label">📊 状态</span>
+        <span class="user-label">邮箱</span>
+        <span class="user-value" id="user-email">-</span>
+      </div>
+      <div class="user-row">
+        <span class="user-label">员工号</span>
+        <span class="user-value" id="user-employee">-</span>
+      </div>
+      <div class="user-row">
+        <span class="user-label">登录名</span>
+        <span class="user-value" id="user-loginname">-</span>
+      </div>
+      <div class="user-row">
+        <span class="user-label">状态</span>
         <span class="user-value" id="user-status">-</span>
       </div>
 
-      <!-- 签名 -->
-      <div class="user-signature" id="user-signature" style="display: none;">
-        <span id="user-signature-text"></span>
-      </div>
-
-      <button class="btn btn-outline" onclick="logout()" style="width: 100%;">🔄 重新登录</button>
+      <button class="btn btn-outline" onclick="logout()" style="width: 100%; margin-top: 20px;">重新登录</button>
     </div>
 
-    <!-- 操作按钮 -->
     <div style="margin-top: 30px;">
-      <button class="btn" onclick="location.reload()">🔄 刷新页面</button>
+      <button class="btn" onclick="location.reload()">刷新页面</button>
     </div>
   </div>
 
-  <!-- 蓝信 JSSDK -->
   <script src="https://user-stage.e.lanxin.cn/user/passport/qrauth/static/login-jssdk.js"></script>
 
   <script>
-    // ================= 配置区域 =================
-
-    // 腾讯云函数地址
     const BACKEND_URL = 'https://1422359745-233asqikpd.ap-guangzhou.tencentscf.com';
 
-    // 蓝信应用配置
     const LANXIN_CONFIG = {
       oauthUrl: 'https://user-stage.e.lanxin.cn/user/passport/qrauth',
       appId: 9183488,
@@ -293,44 +250,27 @@
       redirectUri: window.location.href.split('?')[0]
     };
 
-    // ================= 业务逻辑 =================
-
     const statusEl = document.getElementById('status');
     const loginArea = document.getElementById('login-area');
     const userPanel = document.getElementById('user-panel');
 
-    // 显示状态消息
     function showStatus(msg, type = 'info') {
       statusEl.textContent = msg;
       statusEl.className = type === 'error' ? 'status-error' :
                           type === 'success' ? 'status-success' : '';
     }
 
-    // 状态标签样式
-    function getStatusTag(status) {
-      if (status === '已激活') return '<span class="status-tag status-active">已激活</span>';
-      if (status === '未激活') return '<span class="status-tag status-inactive">未激活</span>';
-      if (status === '已冻结') return '<span class="status-tag status-frozen">已冻结</span>';
-      return status;
-    }
-
-    // 获取姓名首字母作为头像占位符
     function getAvatarPlaceholder(name) {
       if (!name) return '?';
       return name.charAt(0).toUpperCase();
     }
 
-    // 初始化蓝信扫码登录
     function initLanxinLogin() {
       if (typeof LxLogin !== 'function') {
-        showStatus('❌ 蓝信 SDK 加载失败，请检查网络', 'error');
-        console.error('LxLogin not found.');
+        showStatus('蓝信 SDK 加载失败', 'error');
         return;
       }
 
-      console.log('初始化蓝信扫码登录，配置：', LANXIN_CONFIG);
-
-      // 清空之前的loading状态
       const container = document.getElementById('qrauth-container');
       container.innerHTML = '';
 
@@ -342,10 +282,9 @@
         containerId: 'qrauth-container',
         success: async function(res) {
           const { code } = res;
-          showStatus('⏳ 正在验证登录...', 'info');
+          showStatus('正在验证登录...', 'info');
 
           try {
-            // 调用云函数后端
             const response = await fetch(BACKEND_URL, {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
@@ -353,38 +292,34 @@
             });
 
             const result = await response.json();
+            console.log('后端返回:', result);
 
             if (result.success) {
-              // 登录成功，显示用户信息
               displayUserInfo(result.user);
-
-              // 切换 UI
               loginArea.style.display = 'none';
               userPanel.classList.add('show');
-              showStatus('✅ 登录成功！', 'success');
-
+              showStatus('登录成功！', 'success');
             } else {
               throw new Error(result.error || '登录验证失败');
             }
           } catch (err) {
             console.error('Login error:', err);
-            showStatus(`❌ ${err.message}`, 'error');
+            showStatus(err.message, 'error');
           }
         },
         fail: function(err) {
           console.error('LxLogin fail:', err);
-          showStatus(`❌ 扫码失败: ${err.error || err.message || '未知错误'}`, 'error');
+          showStatus('扫码失败: ' + (err.error || err.message || '未知错误'), 'error');
         }
       });
     }
 
-    // 显示用户信息
     function displayUserInfo(user) {
-      // 头部信息
+      // 头部
       document.getElementById('user-name').textContent = user.name || '-';
       document.getElementById('user-org').textContent = user.orgName || '-';
 
-      // 头像处理
+      // 头像
       const avatarIcon = document.getElementById('user-avatar-icon');
       const avatarImg = document.getElementById('user-avatar-img');
 
@@ -399,37 +334,29 @@
 
       // 详细信息
       document.getElementById('user-id').textContent = user.staffId || '-';
-      document.getElementById('user-org-detail').textContent = user.orgName || '-';
+      document.getElementById('user-orgname').textContent = user.orgName || '-';
       document.getElementById('user-dept').textContent = user.departments || '-';
-      document.getElementById('user-gender').textContent = user.gender || '-';
-      document.getElementById('user-status').innerHTML = getStatusTag(user.status);
+      document.getElementById('user-mobile').textContent = user.mobile || '-';
+      document.getElementById('user-email').textContent = user.email || '-';
+      document.getElementById('user-employee').textContent = user.employeeNumber || '-';
+      document.getElementById('user-loginname').textContent = user.loginName || '-';
+      document.getElementById('user-status').innerHTML = '<span class="status-tag">' + (user.status || '已激活') + '</span>';
 
-      // 签名
-      if (user.signature) {
-        document.getElementById('user-signature-text').textContent = `"${user.signature}"`;
-        document.getElementById('user-signature').style.display = 'block';
-      } else {
-        document.getElementById('user-signature').style.display = 'none';
-      }
-
-      console.log('🎉 登录用户:', user);
+      console.log('登录用户:', user);
     }
 
-    // 退出登录
     function logout() {
       userPanel.classList.remove('show');
       loginArea.style.display = 'block';
 
-      // 重置头像显示
       document.getElementById('user-avatar-icon').style.display = 'flex';
       document.getElementById('user-avatar-img').style.display = 'none';
 
-      document.getElementById('qrauth-container').innerHTML = '<div class="loading">⏳ 重新加载...</div>';
+      document.getElementById('qrauth-container').innerHTML = '<div class="loading">重新加载...</div>';
       showStatus('');
       initLanxinLogin();
     }
 
-    // 页面加载完成后初始化
     window.addEventListener('load', function() {
       initLanxinLogin();
     });
