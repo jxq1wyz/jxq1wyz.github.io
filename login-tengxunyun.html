@@ -43,7 +43,7 @@
       font-size: 12px;
       margin: 2px;
     }
-    
+
     /* 登录区域 */
     #login-area {
       margin: 30px 0;
@@ -60,7 +60,7 @@
       background: #fafafa;
     }
     .loading { color: #666; font-size: 14px; }
-    
+
     /* 用户信息面板 */
     #user-panel {
       display: none;
@@ -72,7 +72,7 @@
     }
     #user-panel.show { display: block; animation: fadeIn 0.3s; }
     @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-    
+
     .user-row {
       display: flex;
       align-items: center;
@@ -82,7 +82,7 @@
     .user-row:last-child { border-bottom: none; }
     .user-label { width: 70px; color: #666; font-size: 14px; }
     .user-value { flex: 1; color: #333; font-weight: 500; }
-    
+
     .btn {
       display: inline-block;
       background: #667eea;
@@ -102,7 +102,7 @@
       color: #667eea;
     }
     .btn-outline:hover { background: #f0f2ff; }
-    
+
     /* 状态提示 */
     #status {
       margin-top: 15px;
@@ -111,23 +111,17 @@
     }
     .status-error { color: #e74c3c; }
     .status-success { color: #27ae60; }
-    
+
     /* 配置提示 */
     .config-notice {
-      background: #fff3cd;
-      border: 1px solid #ffc107;
-      color: #856404;
+      background: #d4edda;
+      border: 1px solid #28a745;
+      color: #155724;
       padding: 12px;
       border-radius: 8px;
       font-size: 12px;
       text-align: left;
       margin-bottom: 20px;
-    }
-    .config-notice code {
-      background: #f8f9fa;
-      padding: 2px 6px;
-      border-radius: 4px;
-      font-family: monospace;
     }
   </style>
 </head>
@@ -139,14 +133,17 @@
       <span class="badge">HTTPS</span>
       <span class="badge">腾讯云函数</span>
     </div>
-    
-    <!-- ⚠️ 配置提示（部署后建议删除）-->
+
+    <!-- 配置提示 -->
     <div class="config-notice">
-      <strong>🔧 部署前请确认：</strong><br>
-      1. 修改代码中的 <code>BACKEND_URL</code> 为你的云函数地址<br>
-      2. 修改 <code>LANXIN_CONFIG</code> 为你的蓝信应用参数
+      <strong>✅ 可信域名已配置：</strong><br>
+      • jxq1wyz.github.io<br>
+      • jxq1wyz.github.io/login-tengxunyun.html<br>
+      <br>
+      <strong>⏳ 如果二维码仍无法显示：</strong><br>
+      请等待 5-10 分钟让配置生效后再刷新页面
     </div>
-    
+
     <!-- 登录区域 -->
     <div id="login-area">
       <div id="qrauth-container">
@@ -154,7 +151,7 @@
       </div>
       <div id="status"></div>
     </div>
-    
+
     <!-- 用户信息面板（登录成功后显示）-->
     <div id="user-panel">
       <h3 style="margin-bottom: 15px; color: #333;">✅ 登录成功</h3>
@@ -172,61 +169,68 @@
       </div>
       <button class="btn btn-outline" onclick="logout()" style="width: 100%;">🔄 重新登录</button>
     </div>
-    
+
     <!-- 操作按钮 -->
     <div style="margin-top: 30px;">
       <button class="btn" onclick="location.reload()">🔄 刷新页面</button>
     </div>
   </div>
 
-  <!-- ⚠️ 蓝信 JSSDK（请替换为你的实际域名）-->
-  <!-- 如果不确定域名，可先保留此默认值，报错后再调整 -->
+  <!-- 蓝信 JSSDK -->
   <script src="https://user-stage.e.lanxin.cn/user/passport/qrauth/static/login-jssdk.js"></script>
-  
+
   <script>
-    // ================= 配置区域（⚠️ 请修改这里）=================
-    
-    // 🔹 你的腾讯云函数地址（刚刚复制的那个）
+    // ================= 配置区域 =================
+
+    // 🔹 你的腾讯云函数地址
     const BACKEND_URL = 'https://1422359745-233asqikpd.ap-guangzhou.tencentscf.com';
-    
-    // 🔹 蓝信应用配置（从蓝信开放平台获取）
+
+    // 🔹 蓝信应用配置
     const LANXIN_CONFIG = {
-      oauthUrl: 'https://user-stage.e.lanxin.cn/user/passport',  // ⚠️ 授权页地址
-      appId: 9183488,      // ⚠️ 应用ID（取-后面的数字）
-      orgId: 14803712             // ⚠️ 组织ID
+      // ⚠️ 授权页地址（qrauth结尾）
+      oauthUrl: 'https://user-stage.e.lanxin.cn/user/passport/qrauth',
+      // ⚠️ 应用ID（取-后面的数字）
+      appId: 9183488,
+      // ⚠️ 组织ID
+      orgId: 14803712,
+      // ⚠️ 回调地址（授权成功后跳转回这个地址）
+      redirectUri: window.location.href.split('?')[0]
     };
-    
+
     // ================= 业务逻辑（无需修改）=================
-    
+
     const statusEl = document.getElementById('status');
     const loginArea = document.getElementById('login-area');
     const userPanel = document.getElementById('user-panel');
-    
+
     // 显示状态消息
     function showStatus(msg, type = 'info') {
       statusEl.textContent = msg;
-      statusEl.className = type === 'error' ? 'status-error' : 
+      statusEl.className = type === 'error' ? 'status-error' :
                           type === 'success' ? 'status-success' : '';
     }
-    
+
     // 初始化蓝信扫码登录
     function initLanxinLogin() {
       // 检查 SDK 是否加载
       if (typeof LxLogin !== 'function') {
-        showStatus('❌ 蓝信 SDK 加载失败，请检查网络或域名配置', 'error');
+        showStatus('❌ 蓝信 SDK 加载失败，请检查网络', 'error');
         console.error('LxLogin not found. Please check the SDK URL.');
         return;
       }
-      
+
+      console.log('初始化蓝信扫码登录，配置：', LANXIN_CONFIG);
+
       LxLogin({
         oauthUrl: LANXIN_CONFIG.oauthUrl,
         appId: LANXIN_CONFIG.appId,
         orgId: LANXIN_CONFIG.orgId,
+        redirectUri: LANXIN_CONFIG.redirectUri,  // ✅ 添加回调地址
         containerId: 'qrauth-container',
         success: async function(res) {
           const { code } = res;
           showStatus('⏳ 正在验证登录...', 'info');
-          
+
           try {
             // 调用你的云函数后端
             const response = await fetch(BACKEND_URL, {
@@ -234,23 +238,22 @@
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify({ code })
             });
-            
+
             const result = await response.json();
-            
+
             if (result.success) {
               // ✅ 登录成功，显示用户信息
               const user = result.user;
               document.getElementById('user-name').textContent = user.name || '-';
               document.getElementById('user-mobile').textContent = user.mobile || '-';
               document.getElementById('user-id').textContent = user.userId || '-';
-              
+
               // 切换 UI
               loginArea.style.display = 'none';
               userPanel.classList.add('show');
               showStatus('✅ 登录成功！', 'success');
-              
+
               console.log('🎉 登录用户:', user);
-              // 🎯 这里可以添加：跳转页面 / 保存 token / 执行业务
             } else {
               throw new Error(result.error || '登录验证失败');
             }
@@ -261,12 +264,12 @@
         },
         fail: function(err) {
           console.error('LxLogin fail:', err);
-          showStatus(`❌ 扫码失败: ${err.error || '未知错误'}`, 'error');
+          showStatus(`❌ 扫码失败: ${err.error || err.message || '未知错误'}`, 'error');
         }
       });
     }
-    
-    // 退出登录（简单实现）
+
+    // 退出登录
     function logout() {
       userPanel.classList.remove('show');
       loginArea.style.display = 'block';
@@ -274,10 +277,9 @@
       showStatus('');
       initLanxinLogin();
     }
-    
+
     // 页面加载完成后初始化
     window.addEventListener('load', function() {
-      // 可在此处添加：检查 localStorage 是否已登录
       initLanxinLogin();
     });
   </script>
