@@ -3,376 +3,166 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>企业单点登录 - 蓝信接入</title>
+    <title>扫码登录 - 蓝信</title>
     <style>
-        /* CSS Reset & Variables */
-        :root {
-            --primary-color: #0086F0; /* 蓝信标准蓝 */
-            --primary-hover: #006BC2;
-            --bg-color: #F5F7FA;
-            --card-bg: #FFFFFF;
-            --text-main: #333333;
-            --text-sub: #666666;
-            --border-color: #E1E4E8;
-            --success-color: #28A745;
-            --error-color: #DC3545;
-            --shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-            --radius: 8px;
-            --transition: all 0.3s ease;
-        }
-
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; }
-
         body {
-            background-color: var(--bg-color);
-            background-image: radial-gradient(circle at 10% 20%, rgb(239, 246, 255) 0%, rgb(255, 255, 255) 90%);
+            background-color: #f0f2f5;
             display: flex;
             justify-content: center;
             align-items: center;
-            min-height: 100vh;
-            color: var(--text-main);
+            height: 100vh;
+            margin: 0;
+            font-family: -apple-system, sans-serif;
         }
-
-        .login-container { width: 100%; max-width: 420px; padding: 20px; }
         .login-card {
-            background: var(--card-bg);
-            border-radius: var(--radius);
-            box-shadow: var(--shadow);
-            padding: 40px 30px;
+            background: white;
+            padding: 40px;
+            border-radius: 8px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.1);
             text-align: center;
-            position: relative;
-            overflow: hidden;
-            transition: var(--transition);
+            width: 360px;
         }
-
-        /* Logo Area */
-        .logo-area { margin-bottom: 30px; }
-        .logo-icon {
-            width: 64px; height: 64px;
-            background: rgba(0, 134, 240, 0.1);
-            border-radius: 50%;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            color: var(--primary-color);
-            margin-bottom: 16px;
-        }
-        .logo-icon svg { width: 32px; height: 32px; }
-        h1 { font-size: 24px; font-weight: 600; margin-bottom: 8px; color: var(--text-main); }
-        p.subtitle { font-size: 14px; color: var(--text-sub); }
-
-        /* Actions */
-        .action-area { margin-top: 30px; }
-        .btn-lanxin {
+        h2 { margin-bottom: 20px; color: #333; }
+        
+        /* 二维码区域 */
+        .qr-container {
+            width: 200px;
+            height: 200px;
+            background: #f5f5f5;
+            margin: 0 auto 20px auto;
             display: flex;
             align-items: center;
             justify-content: center;
+            border: 1px solid #eee;
+            position: relative;
+        }
+        .qr-img {
             width: 100%;
-            background-color: var(--primary-color);
-            color: white;
-            border: none;
-            padding: 12px 20px;
-            font-size: 16px;
-            font-weight: 500;
-            border-radius: var(--radius);
-            cursor: pointer;
-            transition: var(--transition);
-            text-decoration: none;
-            box-shadow: 0 2px 6px rgba(0, 134, 240, 0.3);
+            height: 100%;
+            object-fit: contain;
         }
-        .btn-lanxin:hover { background-color: var(--primary-hover); transform: translateY(-1px); }
-        .btn-lanxin:disabled { background-color: #A0CFFF; cursor: not-allowed; transform: none; }
         
-        .spinner {
-            width: 18px; height: 18px;
-            border: 2px solid rgba(255, 255, 255, 0.3);
-            border-radius: 50%;
-            border-top-color: #fff;
-            animation: spin 0.8s linear infinite;
-            margin-right: 8px;
-            display: none;
-        }
-        @keyframes spin { to { transform: rotate(360deg); } }
-
-        /* Config Panel */
-        .footer { margin-top: 20px; font-size: 12px; color: #999; display: flex; justify-content: space-between; align-items: center; }
-        .config-toggle { color: var(--primary-color); cursor: pointer; text-decoration: underline; background: none; border: none; font-size: 12px; padding: 0; }
-        
-        .config-panel {
-            margin-top: 20px;
-            background: #F8F9FA;
-            border: 1px solid var(--border-color);
-            border-radius: var(--radius);
-            padding: 15px;
-            text-align: left;
-            display: none;
-        }
-        .config-panel.active { display: block; animation: fadeIn 0.3s ease; }
-        
-        .form-group { margin-bottom: 12px; }
-        .form-group label { display: block; font-size: 12px; font-weight: 600; margin-bottom: 4px; color: var(--text-sub); }
-        .form-group input { width: 100%; padding: 8px 12px; border: 1px solid var(--border-color); border-radius: 4px; font-size: 13px; outline: none; }
-        
-        .btn-secondary {
-            background-color: #fff;
-            border: 1px solid var(--border-color);
-            color: var(--text-main);
-            padding: 6px 12px;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 12px;
-            margin-top: 8px;
-        }
-        .btn-secondary:hover { background-color: #f0f0f0; }
-
-        /* Success View */
-        .success-view { display: none; flex-direction: column; align-items: center; }
-        .success-icon { color: var(--success-color); margin-bottom: 15px; }
-
-        /* Toast */
-        .toast-container { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); z-index: 1000; }
-        .toast {
-            background: rgba(0, 0, 0, 0.8);
-            color: white;
-            padding: 10px 20px;
-            border-radius: 50px;
+        /* 状态提示 */
+        .status-text {
+            color: #666;
             font-size: 14px;
             margin-bottom: 10px;
-            opacity: 0;
-            transform: translateY(-20px);
-            transition: all 0.3s ease;
-            display: flex; align-items: center;
         }
-        .toast.show { opacity: 1; transform: translateY(0); }
-        .toast.error { background: var(--error-color); }
-        .toast.success { background: var(--success-color); }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }
+        .loading { color: #1890ff; }
+        .success { color: #52c41a; }
+
+        .footer {
+            margin-top: 20px;
+            font-size: 12px;
+            color: #999;
+        }
     </style>
 </head>
 <body>
 
-    <div class="toast-container" id="toastContainer"></div>
+    <div class="login-card">
+        <h2>蓝信扫码登录</h2>
+        
+        <div class="qr-container">
+            <!-- 这里显示二维码 -->
+            <img id="qrImage" class="qr-img" style="display:none;" />
+            <span id="qrLoader">加载中...</span>
+        </div>
+        
+        <div id="statusMsg" class="status-text">请使用蓝信 APP 扫码登录</div>
 
-    <div class="login-container">
-        <div class="login-card">
-            <!-- 登录前视图 -->
-            <div id="loginView">
-                <div class="logo-area">
-                    <div class="logo-icon">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
-                        </svg>
-                    </div>
-                    <h1>欢迎登录</h1>
-                    <p class="subtitle">使用蓝信账号安全登录</p>
-                </div>
-
-                <div class="action-area">
-                    <button class="btn-lanxin" id="btnLogin" onclick="handleLogin()">
-                        <div class="spinner" id="loginSpinner"></div>
-                        <span id="btnText">蓝信单点登录</span>
-                    </button>
-                </div>
-
-                <div class="footer">
-                    <span>安全认证系统</span>
-                    <button class="config-toggle" onclick="toggleConfig()">开发者配置</button>
-                </div>
-
-                <!-- 开发者配置面板 -->
-                <div class="config-panel" id="configPanel">
-                    <div class="form-group">
-                        <label for="appId">App ID (应用ID)</label>
-                        <input type="text" id="appId" placeholder="输入蓝信 AppID" value="">
-                    </div>
-                    <div class="form-group">
-                        <label for="redirectUri">Redirect URI (回调地址)</label>
-                        <input type="text" id="redirectUri" placeholder="当前页面 URL">
-                    </div>
-                    <div class="form-group">
-                        <!-- 修改：这里改为完整URL -->
-                        <label for="authUrl">完整授权URL (Auth Endpoint)</label>
-                        <input type="text" id="authUrl" value="https://user-stage.e.lanxin.cn/user/passport/oauth/authorize" placeholder="完整的授权链接地址">
-                        <div style="font-size: 10px; color: #999; margin-top: 2px;">如果404，请手动修改此地址尝试</div>
-                    </div>
-                    <button class="btn-secondary" onclick="saveConfig()">保存配置</button>
-                    <p style="font-size: 10px; color: #999; margin-top: 5px;">*配置保存在本地</p>
-                </div>
-            </div>
-
-            <!-- 登录成功视图 -->
-            <div id="successView" class="success-view">
-                <div class="success-icon">
-                    <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
-                        <polyline points="22 4 12 14.01 9 11.01"></polyline>
-                    </svg>
-                </div>
-                <h2>登录成功</h2>
-                <p class="subtitle" id="userInfo">正在跳转到业务系统...</p>
-                <button class="btn-secondary" onclick="location.reload()" style="margin-top: 20px;">退出 / 重新测试</button>
-            </div>
-
+        <div class="footer">
+            安全认证系统
         </div>
     </div>
 
     <script>
-        // ==========================================
-        // 1. 核心配置
-        // ==========================================
-        const WORKER_API_URL = 'https://lanxin-backend.zhb6636.workers.dev'; // 请确保这里改成了你的地址
-        const defaultConfig = {
-            appId: '',
-            redirectUri: window.location.href.split('?')[0],
-            // 修改：这里预设完整的URL，包含 /oauth/authorize
-            authUrl: 'https://user-stage.e.lanxin.cn/user/passport/oauth/authorize',
-            scope: 'snsapi_login',
-            state: 'lanxin_sso_' + Math.random().toString(36).substr(2)
-        };
+        // 【重要】请修改为你的 Cloudflare Worker 地址
+        const WORKER_API_URL = 'https://lanxin-backend.zhb6636.workers.dev'; 
 
-        document.addEventListener('DOMContentLoaded', () => {
-            loadConfig();
-            checkCallback();
-        });
+        let pollTimer = null;
+        let currentTicket = null;
 
-        function loadConfig() {
-            const saved = localStorage.getItem('lanxin_sso_config');
-            let config = saved ? JSON.parse(saved) : defaultConfig;
-            document.getElementById('appId').value = config.appId;
-            document.getElementById('redirectUri').value = config.redirectUri;
-            document.getElementById('authUrl').value = config.authUrl; // 读取完整URL
-        }
-
-        function saveConfig() {
-            const config = {
-                appId: document.getElementById('appId').value.trim(),
-                redirectUri: document.getElementById('redirectUri').value.trim(),
-                authUrl: document.getElementById('authUrl').value.trim()
-            };
-            localStorage.setItem('lanxin_sso_config', JSON.stringify(config));
-            showToast('配置已保存', 'success');
-            toggleConfig();
-        }
-
-        function toggleConfig() {
-            const panel = document.getElementById('configPanel');
-            panel.classList.toggle('active');
-        }
-
-        // ==========================================
-        // 2. 登录逻辑 (直接使用完整URL)
-        // ==========================================
-        function handleLogin() {
-            const appId = document.getElementById('appId').value.trim();
-            const redirectUri = document.getElementById('redirectUri').value.trim();
-            const authUrl = document.getElementById('authUrl').value.trim(); // 获取完整URL
-
-            if (!appId) {
-                showToast('请先填写 App ID', 'error');
-                toggleConfig();
+        // 页面加载即执行
+        window.onload = function() {
+            if (WORKER_API_URL.includes('zhb6636')) {
+                alert('请先修改代码中的 WORKER_API_URL 为真实地址');
                 return;
             }
+            fetchQRCode();
+        };
 
-            const state = 'lanxin_sso_' + Math.random().toString(36).substr(2);
-            localStorage.setItem('lanxin_state', state);
+        // 1. 获取二维码
+        async function fetchQRCode() {
+            try {
+                const res = await fetch(`${WORKER_API_URL}/get_qr`);
+                const data = await res.json();
 
-            const params = new URLSearchParams({
-                appid: appId,
-                redirect_uri: encodeURIComponent(redirectUri),
-                response_type: 'code',
-                scope: 'snsapi_login',
-                state: state
-            });
-
-            // 修改：直接拼接参数，不再硬编码路径
-            const finalUrl = `${authUrl}?${params.toString()}`;
-
-            const btn = document.getElementById('btnLogin');
-            const spinner = document.getElementById('loginSpinner');
-            const text = document.getElementById('btnText');
-
-            btn.disabled = true;
-            spinner.style.display = 'block';
-            text.innerText = '正在跳转...';
-
-            setTimeout(() => {
-                window.location.href = finalUrl;
-            }, 800);
-        }
-
-        // ==========================================
-        // 3. 回调处理
-        // ==========================================
-        function checkCallback() {
-            const params = new URLSearchParams(window.location.search);
-            const code = params.get('code');
-            const state = params.get('state');
-            const savedState = localStorage.getItem('lanxin_state');
-
-            if (code) {
-                if (state && state !== savedState) {
-                    showToast('State 校验失败', 'error');
-                    return;
-                }
-
-                window.history.replaceState({}, document.title, window.location.pathname);
-                document.getElementById('loginView').style.display = 'none';
-                document.getElementById('successView').style.display = 'flex';
-                sendCodeToBackend(code);
-            }
-        }
-
-        // ==========================================
-        // 4. 发送 Code 给后端
-        // ==========================================
-        function sendCodeToBackend(code) {
-            const infoText = document.getElementById('userInfo');
-            
-            if (WORKER_API_URL.includes('zhb6636')) {
-                 infoText.innerText = '错误：请修改代码中的 WORKER_API_URL';
-                 showToast('请在代码中配置后端地址', 'error');
-                 return;
-            }
-
-            infoText.innerHTML = `已获取授权码: <b>${code.substring(0, 10)}...</b><br>正在验证...`;
-
-            fetch(WORKER_API_URL, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ code: code })
-            })
-            .then(response => response.json())
-            .then(data => {
-                console.log("后端返回:", data);
-                if (data.access_token || data.userid || data.errcode === 0) {
-                    infoText.innerHTML = `验证成功！<br>Token: ${data.access_token ? data.access_token.substring(0,20)+'...' : 'N/A'}`;
-                    showToast('登录成功', 'success');
+                if (data.qr_code) {
+                    // 显示二维码
+                    const img = document.getElementById('qrImage');
+                    img.src = data.qr_code; // 这里假设后端返回的是完整的图片URL
+                    img.style.display = 'block';
+                    document.getElementById('qrLoader').style.display = 'none';
+                    
+                    currentTicket = data.ticket;
+                    
+                    // 开始轮询检查状态
+                    startPolling();
                 } else {
-                    throw new Error(data.errmsg || data.error || '未知错误');
+                    document.getElementById('statusMsg').innerText = '获取二维码失败';
+                    document.getElementById('statusMsg').className = 'status-text error';
                 }
-            })
-            .catch(error => {
-                console.error(error);
-                infoText.innerHTML = `验证失败<br>原因: ${error.message}`;
-                showToast('验证失败', 'error');
-            });
+            } catch (err) {
+                console.error(err);
+                document.getElementById('statusMsg').innerText = '网络错误';
+            }
         }
 
-        // ==========================================
-        // 5. 工具函数
-        // ==========================================
-        function showToast(message, type = 'normal') {
-            const container = document.getElementById('toastContainer');
-            const toast = document.createElement('div');
-            toast.className = `toast ${type}`;
-            toast.innerText = message;
-            container.appendChild(toast);
+        // 2. 轮询检查扫码状态
+        function startPolling() {
+            pollTimer = setInterval(async () => {
+                if (!currentTicket) return;
+
+                try {
+                    const res = await fetch(`${WORKER_API_URL}/check_status`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ ticket: currentTicket })
+                    });
+                    const data = await res.json();
+                    
+                    console.log("状态检查:", data);
+
+                    // 【注意】这里的状态码需要根据蓝信文档返回的数据结构来写
+                    // 假设 data.status === 'success' 或类似的值
+                    if (data.status === 'success' || data.code === 0) {
+                        clearInterval(pollTimer);
+                        handleLoginSuccess(data);
+                    } else if (data.status === 'expired') {
+                        clearInterval(pollTimer);
+                        document.getElementById('statusMsg').innerText = '二维码已过期，请刷新页面';
+                    } else if (data.status === 'scanned') {
+                        document.getElementById('statusMsg').innerText = '已扫描，请在手机上确认';
+                        document.getElementById('statusMsg').className = 'status-text loading';
+                    }
+
+                } catch (err) {
+                    console.error("轮询错误", err);
+                }
+            }, 2000); // 每2秒问一次
+        }
+
+        // 3. 登录成功
+        function handleLoginSuccess(userInfo) {
+            document.getElementById('statusMsg').innerText = '登录成功，正在跳转...';
+            document.getElementById('statusMsg').className = 'status-text success';
             
-            requestAnimationFrame(() => { toast.classList.add('show'); });
+            // 这里可以保存 token 或跳转
             setTimeout(() => {
-                toast.classList.remove('show');
-                toast.addEventListener('transitionend', () => { toast.remove(); });
-            }, 3000);
+                // window.location.href = '/welcome.html';
+                alert('登录成功！用户信息：' + JSON.stringify(userInfo));
+            }, 1000);
         }
     </script>
 </body>
