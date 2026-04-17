@@ -33,7 +33,7 @@
             color: var(--text-main);
         }
 
-        .login-container { width: 100%; max-width: 400px; padding: 20px; }
+        .login-container { width: 100%; max-width: 420px; padding: 20px; }
         .login-card {
             background: var(--card-bg);
             border-radius: var(--radius);
@@ -190,12 +190,13 @@
                         <input type="text" id="redirectUri" placeholder="当前页面 URL">
                     </div>
                     <div class="form-group">
-                        <label for="authDomain">授权页地址</label>
-                        <!-- 已根据你的后台信息修正 -->
-                        <input type="text" id="authDomain" value="https://user-stage.e.lanxin.cn/user/passport" placeholder="蓝信授权地址">
+                        <!-- 修改：这里改为完整URL -->
+                        <label for="authUrl">完整授权URL (Auth Endpoint)</label>
+                        <input type="text" id="authUrl" value="https://user-stage.e.lanxin.cn/user/passport/oauth/authorize" placeholder="完整的授权链接地址">
+                        <div style="font-size: 10px; color: #999; margin-top: 2px;">如果404，请手动修改此地址尝试</div>
                     </div>
                     <button class="btn-secondary" onclick="saveConfig()">保存配置</button>
-                    <p style="font-size: 10px; color: #999; margin-top: 5px;">*配置保存在本地，仅用于前端跳转。</p>
+                    <p style="font-size: 10px; color: #999; margin-top: 5px;">*配置保存在本地</p>
                 </div>
             </div>
 
@@ -217,21 +218,14 @@
 
     <script>
         // ==========================================
-        // 1. 核心配置：你的 Cloudflare Worker 后端地址
-        // 【重要】请将下方引号内的内容，替换为你 Cloudflare 截图中右侧显示的完整地址
+        // 1. 核心配置
         // ==========================================
-        const WORKER_API_URL = 'https://lanxin-backend.zhb6636.workers.dev'; 
-        // 上面的地址只是示例，请务必改成你真实的！
-        // 例如: 'https://lanxin-backend.你的账号.workers.dev'
-
-        // 默认配置（已根据你的环境修正）
+        const WORKER_API_URL = 'https://lanxin-backend.zhb6636.workers.dev'; // 请确保这里改成了你的地址
         const defaultConfig = {
             appId: '',
-            redirectUri: window.location.href.split('?')[0], // 自动获取当前页面不含参数的URL
-            
-            // 【修正点】这里使用你后台的授权页地址
-            authDomain: 'https://user-stage.e.lanxin.cn/user/passport', 
-            
+            redirectUri: window.location.href.split('?')[0],
+            // 修改：这里预设完整的URL，包含 /oauth/authorize
+            authUrl: 'https://user-stage.e.lanxin.cn/user/passport/oauth/authorize',
             scope: 'snsapi_login',
             state: 'lanxin_sso_' + Math.random().toString(36).substr(2)
         };
@@ -246,14 +240,14 @@
             let config = saved ? JSON.parse(saved) : defaultConfig;
             document.getElementById('appId').value = config.appId;
             document.getElementById('redirectUri').value = config.redirectUri;
-            document.getElementById('authDomain').value = config.authDomain;
+            document.getElementById('authUrl').value = config.authUrl; // 读取完整URL
         }
 
         function saveConfig() {
             const config = {
                 appId: document.getElementById('appId').value.trim(),
                 redirectUri: document.getElementById('redirectUri').value.trim(),
-                authDomain: document.getElementById('authDomain').value.trim()
+                authUrl: document.getElementById('authUrl').value.trim()
             };
             localStorage.setItem('lanxin_sso_config', JSON.stringify(config));
             showToast('配置已保存', 'success');
@@ -266,12 +260,12 @@
         }
 
         // ==========================================
-        // 2. 登录逻辑
+        // 2. 登录逻辑 (直接使用完整URL)
         // ==========================================
         function handleLogin() {
             const appId = document.getElementById('appId').value.trim();
             const redirectUri = document.getElementById('redirectUri').value.trim();
-            const authDomain = document.getElementById('authDomain').value.trim();
+            const authUrl = document.getElementById('authUrl').value.trim(); // 获取完整URL
 
             if (!appId) {
                 showToast('请先填写 App ID', 'error');
@@ -290,7 +284,8 @@
                 state: state
             });
 
-            const authUrl = `${authDomain}/oauth/authorize?${params.toString()}`;
+            // 修改：直接拼接参数，不再硬编码路径
+            const finalUrl = `${authUrl}?${params.toString()}`;
 
             const btn = document.getElementById('btnLogin');
             const spinner = document.getElementById('loginSpinner');
@@ -301,7 +296,7 @@
             text.innerText = '正在跳转...';
 
             setTimeout(() => {
-                window.location.href = authUrl;
+                window.location.href = finalUrl;
             }, 800);
         }
 
@@ -333,7 +328,6 @@
         function sendCodeToBackend(code) {
             const infoText = document.getElementById('userInfo');
             
-            // 检查是否修改了默认地址
             if (WORKER_API_URL.includes('zhb6636')) {
                  infoText.innerText = '错误：请修改代码中的 WORKER_API_URL';
                  showToast('请在代码中配置后端地址', 'error');
