@@ -65,7 +65,7 @@
         
         <div class="qr-container">
             <!-- 这里显示二维码 -->
-            <img id="qrImage" class="qr-img" style="display:none;" />
+            <img id="qrImage" class="qr-img" style="display:none;" alt="二维码加载失败" />
             <span id="qrLoader">加载中...</span>
         </div>
         
@@ -98,10 +98,12 @@
                 const res = await fetch(`${WORKER_API_URL}/get_qr`);
                 const data = await res.json();
 
+                console.log("二维码数据:", data);
+
                 if (data.qr_code) {
                     // 显示二维码
                     const img = document.getElementById('qrImage');
-                    img.src = data.qr_code; // 这里假设后端返回的是完整的图片URL
+                    img.src = data.qr_code; 
                     img.style.display = 'block';
                     document.getElementById('qrLoader').style.display = 'none';
                     
@@ -110,12 +112,12 @@
                     // 开始轮询检查状态
                     startPolling();
                 } else {
-                    document.getElementById('statusMsg').innerText = '获取二维码失败';
+                    document.getElementById('statusMsg').innerText = '获取二维码失败: ' + (data.error || '未知错误');
                     document.getElementById('statusMsg').className = 'status-text error';
                 }
             } catch (err) {
                 console.error(err);
-                document.getElementById('statusMsg').innerText = '网络错误';
+                document.getElementById('statusMsg').innerText = '网络错误，请检查 WORKER_API_URL';
             }
         }
 
@@ -134,9 +136,9 @@
                     
                     console.log("状态检查:", data);
 
-                    // 【注意】这里的状态码需要根据蓝信文档返回的数据结构来写
-                    // 假设 data.status === 'success' 或类似的值
-                    if (data.status === 'success' || data.code === 0) {
+                    // 【重要】这里的状态码判断需要根据蓝信文档调整
+                    // 常见状态: waiting(未扫), scanned(已扫), confirmed/complete(成功), expired(过期)
+                    if (data.status === 'confirmed' || data.status === 'complete' || data.code === 0) {
                         clearInterval(pollTimer);
                         handleLoginSuccess(data);
                     } else if (data.status === 'expired') {
