@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>蓝信单点登录 Demo</title>
   <style>
-    /* 借用你提供的精美样式 */
+    /* 引用你提供的成功样式 */
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
@@ -113,15 +113,15 @@
   <script>
     // ================= 配置区域 =================
     
-    // 🔹 你的 Cloudflare Worker 地址 (请务必修改！)
+    // 🔹 你的 Cloudflare Worker 后端地址 (已根据你的截图填入)
     const BACKEND_URL = 'https://lanxin-backend.zhb6636.workers.dev'; 
 
-    // 🔹 蓝信应用配置 (从你的参考代码中复制)
+    // 🔹 蓝信应用配置 (已根据你提供的代码填入)
     const LANXIN_CONFIG = {
       // qrauth 结尾的地址
       oauthUrl: 'https://user-stage.e.lanxin.cn/user/passport/qrauth',
-      appId: 9183488,      // 你的 App ID (数字)
-      orgId: 14803712,     // 你的组织 ID (数字)
+      appId: 9183488,      // 你的 App ID
+      orgId: 14803712,     // 你的组织 ID
       redirectUri: window.location.href.split('?')[0] // 当前页面地址
     };
 
@@ -145,12 +145,6 @@
         return;
       }
 
-      // 检查后端地址是否修改
-      if (BACKEND_URL.includes('zhb6636')) {
-        alert('请先修改 HTML 代码中的 BACKEND_URL 为真实地址！');
-        return;
-      }
-
       console.log('初始化蓝信扫码登录...');
 
       // 调用 JSSDK 初始化二维码
@@ -167,7 +161,7 @@
           showStatus('⏳ 正在验证登录...', 'info');
 
           try {
-            // 发送 code 到你的 Cloudflare Worker
+            // 发送 code 到 Cloudflare Worker
             const response = await fetch(BACKEND_URL, {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
