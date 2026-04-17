@@ -21,12 +21,7 @@
             --transition: all 0.3s ease;
         }
 
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-        }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; }
 
         body {
             background-color: var(--bg-color);
@@ -38,13 +33,7 @@
             color: var(--text-main);
         }
 
-        /* Main Layout */
-        .login-container {
-            width: 100%;
-            max-width: 400px;
-            padding: 20px;
-        }
-
+        .login-container { width: 100%; max-width: 400px; padding: 20px; }
         .login-card {
             background: var(--card-bg);
             border-radius: var(--radius);
@@ -56,14 +45,10 @@
             transition: var(--transition);
         }
 
-        /* Header Section */
-        .logo-area {
-            margin-bottom: 30px;
-        }
-
+        /* Logo Area */
+        .logo-area { margin-bottom: 30px; }
         .logo-icon {
-            width: 64px;
-            height: 64px;
+            width: 64px; height: 64px;
             background: rgba(0, 134, 240, 0.1);
             border-radius: 50%;
             display: inline-flex;
@@ -72,29 +57,12 @@
             color: var(--primary-color);
             margin-bottom: 16px;
         }
+        .logo-icon svg { width: 32px; height: 32px; }
+        h1 { font-size: 24px; font-weight: 600; margin-bottom: 8px; color: var(--text-main); }
+        p.subtitle { font-size: 14px; color: var(--text-sub); }
 
-        .logo-icon svg {
-            width: 32px;
-            height: 32px;
-        }
-
-        h1 {
-            font-size: 24px;
-            font-weight: 600;
-            margin-bottom: 8px;
-            color: var(--text-main);
-        }
-
-        p.subtitle {
-            font-size: 14px;
-            color: var(--text-sub);
-        }
-
-        /* Form Elements */
-        .action-area {
-            margin-top: 30px;
-        }
-
+        /* Actions */
+        .action-area { margin-top: 30px; }
         .btn-lanxin {
             display: flex;
             align-items: center;
@@ -112,52 +80,24 @@
             text-decoration: none;
             box-shadow: 0 2px 6px rgba(0, 134, 240, 0.3);
         }
-
-        .btn-lanxin:hover {
-            background-color: var(--primary-hover);
-            transform: translateY(-1px);
-            box-shadow: 0 4px 8px rgba(0, 134, 240, 0.4);
+        .btn-lanxin:hover { background-color: var(--primary-hover); transform: translateY(-1px); }
+        .btn-lanxin:disabled { background-color: #A0CFFF; cursor: not-allowed; transform: none; }
+        
+        .spinner {
+            width: 18px; height: 18px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: #fff;
+            animation: spin 0.8s linear infinite;
+            margin-right: 8px;
+            display: none;
         }
+        @keyframes spin { to { transform: rotate(360deg); } }
 
-        .btn-lanxin:active {
-            transform: translateY(0);
-        }
-
-        .btn-lanxin svg {
-            margin-right: 10px;
-            width: 20px;
-            height: 20px;
-            fill: currentColor;
-        }
-
-        .btn-lanxin:disabled {
-            background-color: #A0CFFF;
-            cursor: not-allowed;
-            transform: none;
-            box-shadow: none;
-        }
-
-        /* Footer / Config Toggle */
-        .footer {
-            margin-top: 20px;
-            font-size: 12px;
-            color: #999;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .config-toggle {
-            color: var(--primary-color);
-            cursor: pointer;
-            text-decoration: underline;
-            background: none;
-            border: none;
-            font-size: 12px;
-            padding: 0;
-        }
-
-        /* Configuration Panel (Dev Only) */
+        /* Config Panel */
+        .footer { margin-top: 20px; font-size: 12px; color: #999; display: flex; justify-content: space-between; align-items: center; }
+        .config-toggle { color: var(--primary-color); cursor: pointer; text-decoration: underline; background: none; border: none; font-size: 12px; padding: 0; }
+        
         .config-panel {
             margin-top: 20px;
             background: #F8F9FA;
@@ -165,40 +105,14 @@
             border-radius: var(--radius);
             padding: 15px;
             text-align: left;
-            display: none; /* Hidden by default */
+            display: none;
         }
-
-        .config-panel.active {
-            display: block;
-            animation: fadeIn 0.3s ease;
-        }
-
-        .form-group {
-            margin-bottom: 12px;
-        }
-
-        .form-group label {
-            display: block;
-            font-size: 12px;
-            font-weight: 600;
-            margin-bottom: 4px;
-            color: var(--text-sub);
-        }
-
-        .form-group input {
-            width: 100%;
-            padding: 8px 12px;
-            border: 1px solid var(--border-color);
-            border-radius: 4px;
-            font-size: 13px;
-            outline: none;
-        }
-
-        .form-group input:focus {
-            border-color: var(--primary-color);
-            box-shadow: 0 0 0 2px rgba(0, 134, 240, 0.1);
-        }
-
+        .config-panel.active { display: block; animation: fadeIn 0.3s ease; }
+        
+        .form-group { margin-bottom: 12px; }
+        .form-group label { display: block; font-size: 12px; font-weight: 600; margin-bottom: 4px; color: var(--text-sub); }
+        .form-group input { width: 100%; padding: 8px 12px; border: 1px solid var(--border-color); border-radius: 4px; font-size: 13px; outline: none; }
+        
         .btn-secondary {
             background-color: #fff;
             border: 1px solid var(--border-color);
@@ -209,53 +123,14 @@
             font-size: 12px;
             margin-top: 8px;
         }
+        .btn-secondary:hover { background-color: #f0f0f0; }
 
-        .btn-secondary:hover {
-            background-color: #f0f0f0;
-        }
+        /* Success View */
+        .success-view { display: none; flex-direction: column; align-items: center; }
+        .success-icon { color: var(--success-color); margin-bottom: 15px; }
 
-        /* Loading Spinner */
-        .spinner {
-            width: 18px;
-            height: 18px;
-            border: 2px solid rgba(255, 255, 255, 0.3);
-            border-radius: 50%;
-            border-top-color: #fff;
-            animation: spin 0.8s linear infinite;
-            margin-right: 8px;
-            display: none;
-        }
-
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(-5px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        /* Success State */
-        .success-view {
-            display: none;
-            flex-direction: column;
-            align-items: center;
-        }
-
-        .success-icon {
-            color: var(--success-color);
-            margin-bottom: 15px;
-        }
-
-        /* Toast Notification */
-        .toast-container {
-            position: fixed;
-            top: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            z-index: 1000;
-        }
-
+        /* Toast */
+        .toast-container { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); z-index: 1000; }
         .toast {
             background: rgba(0, 0, 0, 0.8);
             color: white;
@@ -266,23 +141,12 @@
             opacity: 0;
             transform: translateY(-20px);
             transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            display: flex; align-items: center;
         }
-
-        .toast.show {
-            opacity: 1;
-            transform: translateY(0);
-        }
-
-        .toast.error {
-            background: var(--error-color);
-        }
-
-        .toast.success {
-            background: var(--success-color);
-        }
+        .toast.show { opacity: 1; transform: translateY(0); }
+        .toast.error { background: var(--error-color); }
+        .toast.success { background: var(--success-color); }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body>
@@ -295,7 +159,6 @@
             <div id="loginView">
                 <div class="logo-area">
                     <div class="logo-icon">
-                        <!-- Shield/Lock Icon -->
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
                         </svg>
@@ -327,14 +190,12 @@
                         <input type="text" id="redirectUri" placeholder="当前页面 URL">
                     </div>
                     <div class="form-group">
-                        <label for="authDomain">授权域名</label>
-                        <!-- 根据你的环境，这里预填了 stage 地址 -->
-                        <input type="text" id="authDomain" value="https://open-stage.e.lanxin.cn" placeholder="蓝信授权域名">
+                        <label for="authDomain">授权页地址</label>
+                        <!-- 已根据你的后台信息修正 -->
+                        <input type="text" id="authDomain" value="https://user-stage.e.lanxin.cn/user/passport" placeholder="蓝信授权地址">
                     </div>
                     <button class="btn-secondary" onclick="saveConfig()">保存配置</button>
-                    <p style="font-size: 10px; color: #999; margin-top: 5px;">
-                        *配置保存在本地，仅用于前端跳转。
-                    </p>
+                    <p style="font-size: 10px; color: #999; margin-top: 5px;">*配置保存在本地，仅用于前端跳转。</p>
                 </div>
             </div>
 
@@ -357,39 +218,37 @@
     <script>
         // ==========================================
         // 1. 核心配置：你的 Cloudflare Worker 后端地址
-        // ==========================================
-        
         // 【重要】请将下方引号内的内容，替换为你 Cloudflare 截图中右侧显示的完整地址
-        // 例如: 'https://lanxin-backend.zhb6636.workers.dev'
-        const WORKER_API_URL = 'lanxin-backend.zhb6636.workers.dev'; 
+        // ==========================================
+        const WORKER_API_URL = 'https://lanxin-backend.zhb6636.workers.dev'; 
+        // 上面的地址只是示例，请务必改成你真实的！
+        // 例如: 'https://lanxin-backend.你的账号.workers.dev'
 
-
-        // 默认配置（如果用户没有配置，这里作为示例）
+        // 默认配置（已根据你的环境修正）
         const defaultConfig = {
             appId: '',
             redirectUri: window.location.href.split('?')[0], // 自动获取当前页面不含参数的URL
-            authDomain: 'https://open-stage.e.lanxin.cn', // 默认使用你的测试环境
-            scope: 'snsapi_login', // 静默授权或手动授权，参考文档
+            
+            // 【修正点】这里使用你后台的授权页地址
+            authDomain: 'https://user-stage.e.lanxin.cn/user/passport', 
+            
+            scope: 'snsapi_login',
             state: 'lanxin_sso_' + Math.random().toString(36).substr(2)
         };
 
-        // 页面加载时初始化
         document.addEventListener('DOMContentLoaded', () => {
             loadConfig();
             checkCallback();
         });
 
-        // 加载本地存储的配置
         function loadConfig() {
             const saved = localStorage.getItem('lanxin_sso_config');
             let config = saved ? JSON.parse(saved) : defaultConfig;
-            
             document.getElementById('appId').value = config.appId;
             document.getElementById('redirectUri').value = config.redirectUri;
             document.getElementById('authDomain').value = config.authDomain;
         }
 
-        // 保存配置
         function saveConfig() {
             const config = {
                 appId: document.getElementById('appId').value.trim(),
@@ -398,35 +257,31 @@
             };
             localStorage.setItem('lanxin_sso_config', JSON.stringify(config));
             showToast('配置已保存', 'success');
-            toggleConfig(); // 关闭面板
+            toggleConfig();
         }
 
-        // 切换配置面板
         function toggleConfig() {
             const panel = document.getElementById('configPanel');
             panel.classList.toggle('active');
         }
 
         // ==========================================
-        // 2. 核心登录逻辑 (前端部分)
+        // 2. 登录逻辑
         // ==========================================
-
         function handleLogin() {
             const appId = document.getElementById('appId').value.trim();
             const redirectUri = document.getElementById('redirectUri').value.trim();
             const authDomain = document.getElementById('authDomain').value.trim();
 
             if (!appId) {
-                showToast('请先在开发者配置中填写 App ID', 'error');
+                showToast('请先填写 App ID', 'error');
                 toggleConfig();
                 return;
             }
 
-            // 构建 OAuth 授权 URL
             const state = 'lanxin_sso_' + Math.random().toString(36).substr(2);
-            localStorage.setItem('lanxin_state', state); // 保存 state 用于校验
+            localStorage.setItem('lanxin_state', state);
 
-            // 构造参数
             const params = new URLSearchParams({
                 appid: appId,
                 redirect_uri: encodeURIComponent(redirectUri),
@@ -437,7 +292,6 @@
 
             const authUrl = `${authDomain}/oauth/authorize?${params.toString()}`;
 
-            // UI 交互：显示加载中
             const btn = document.getElementById('btnLogin');
             const spinner = document.getElementById('loginSpinner');
             const text = document.getElementById('btnText');
@@ -446,65 +300,48 @@
             spinner.style.display = 'block';
             text.innerText = '正在跳转...';
 
-            // 模拟延迟后跳转
             setTimeout(() => {
-                console.log("Redirecting to:", authUrl);
-                 window.location.href = authUrl;
+                window.location.href = authUrl;
             }, 800);
         }
 
-        function resetButton() {
-            const btn = document.getElementById('btnLogin');
-            const spinner = document.getElementById('loginSpinner');
-            const text = document.getElementById('btnText');
-            btn.disabled = false;
-            spinner.style.display = 'none';
-            text.innerText = '蓝信单点登录';
-        }
-
         // ==========================================
-        // 3. 回调处理 (对接后端)
+        // 3. 回调处理
         // ==========================================
-
         function checkCallback() {
             const params = new URLSearchParams(window.location.search);
             const code = params.get('code');
             const state = params.get('state');
             const savedState = localStorage.getItem('lanxin_state');
 
-            // 如果 URL 中有 code，说明是从蓝信回调回来的
             if (code) {
-                // 1. 简单校验 State（防止 CSRF）
                 if (state && state !== savedState) {
-                    showToast('State 校验失败，请求非法', 'error');
+                    showToast('State 校验失败', 'error');
                     return;
                 }
 
-                // 2. 清理 URL 中的参数（保持地址栏干净）
                 window.history.replaceState({}, document.title, window.location.pathname);
-
-                // 3. 显示登录中状态
                 document.getElementById('loginView').style.display = 'none';
-                document.getElementById('successView').style.display = 'flex'; // 先显示成功界面
-
-                // 4. 关键步骤：将 code 发送给后端
+                document.getElementById('successView').style.display = 'flex';
                 sendCodeToBackend(code);
             }
         }
 
-        // 发送 Code 给后端 {
+        // ==========================================
+        // 4. 发送 Code 给后端
+        // ==========================================
+        function sendCodeToBackend(code) {
             const infoText = document.getElementById('userInfo');
             
-            // 检查 Worker 地址是否已配置
-            if (WORKER_API_URL.includes('你的账号后缀')) {
-                 infoText.innerText = '错误：请先修改 HTML 代码中的 WORKER_API_URL';
+            // 检查是否修改了默认地址
+            if (WORKER_API_URL.includes('zhb6636')) {
+                 infoText.innerText = '错误：请修改代码中的 WORKER_API_URL';
                  showToast('请在代码中配置后端地址', 'error');
                  return;
             }
 
-            infoText.innerHTML = `已获取授权码: <b>${code.substring(0, 10)}...</b><br>正在连接服务器验证身份...`;
+            infoText.innerHTML = `已获取授权码: <b>${code.substring(0, 10)}...</b><br>正在验证...`;
 
-            // 真实请求 Cloudflare Worker
             fetch(WORKER_API_URL, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -512,12 +349,10 @@
             })
             .then(response => response.json())
             .then(data => {
-                console.log("后端返回数据:", data);
-                
-                // 判断是否成功 (根据蓝信实际返回结构调整)
+                console.log("后端返回:", data);
                 if (data.access_token || data.userid || data.errcode === 0) {
-                    infoText.innerHTML = `验证通过！<br>用户ID: ${data.userid || data.access_token}`;
-                    showToast('登录验证成功', 'success');
+                    infoText.innerHTML = `验证成功！<br>Token: ${data.access_token ? data.access_token.substring(0,20)+'...' : 'N/A'}`;
+                    showToast('登录成功', 'success');
                 } else {
                     throw new Error(data.errmsg || data.error || '未知错误');
                 }
@@ -525,32 +360,24 @@
             .catch(error => {
                 console.error(error);
                 infoText.innerHTML = `验证失败<br>原因: ${error.message}`;
-                showToast('验证失败，请检查配置', 'error');
+                showToast('验证失败', 'error');
             });
         }
 
         // ==========================================
-        // 4. 工具函数：Toast 提示
+        // 5. 工具函数
         // ==========================================
         function showToast(message, type = 'normal') {
             const container = document.getElementById('toastContainer');
             const toast = document.createElement('div');
             toast.className = `toast ${type}`;
             toast.innerText = message;
-            
             container.appendChild(toast);
             
-            // 动画显示
-            requestAnimationFrame(() => {
-                toast.classList.add('show');
-            });
-
-            // 3秒后移除
+            requestAnimationFrame(() => { toast.classList.add('show'); });
             setTimeout(() => {
                 toast.classList.remove('show');
-                toast.addEventListener('transitionend', () => {
-                    toast.remove();
-                });
+                toast.addEventListener('transitionend', () => { toast.remove(); });
             }, 3000);
         }
     </script>
