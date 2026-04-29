@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Excel 数据计算服务</title>
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; margin: 0; padding: 40px; background: #f5f7fa; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
+        .container { background: #fff; padding: 30px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); width: 100%; max-width: 400px; text-align: center; }
+        h2 { margin-top: 0; color: #333; }
+        input { width: calc(100% - 20px); padding: 10px; margin: 15px 0; border: 1px solid #ddd; border-radius: 6px; font-size: 16px; box-sizing: border-box; }
+        button { width: 100%; padding: 12px; background: #0052d9; color: #fff; border: none; border-radius: 6px; font-size: 16px; cursor: pointer; transition: background 0.2s; }
+        button:hover { background: #003bb3; }
+        button:disabled { background: #a0a0a0; cursor: not-allowed; }
+        #result { margin-top: 20px; font-size: 15px; min-height: 24px; }
+        .success a { color: #0052d9; font-weight: bold; text-decoration: none; border-bottom: 1px dashed #0052d9; }
+        .success a:hover { border-bottom-style: solid; }
+        .error { color: #e34d59; }
+        .loading { color: #666; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>📊 输入数字生成报表</h2>
+        <input type="number" id="numInput" placeholder="请输入数字（支持小数）" step="any">
+        <button id="submitBtn" onclick="submitData()">确定</button>
+        <div id="result"></div>
+    </div>
+
+    <script>
+        // ⚠️ 务必替换为你的腾讯云后端真实地址（需带 http:// 或 https://）
+        const BACKEND_URL = 'https://your-tencent-cloud-domain.com';
+
+        async function submitData() {
+            const input = document.getElementById('numInput');
+            const btn = document.getElementById('submitBtn');
+            const resultDiv = document.getElementById('result');
+            const num = input.value.trim();
+
+            if (num === '') {
+                resultDiv.innerHTML = '<p class="error">请输入有效数字</p>';
+                return;
+            }
+
+            btn.disabled = true;
+            btn.textContent = '处理中...';
+            resultDiv.innerHTML = '<p class="loading">正在生成文件，请稍候...</p>';
+
+            try {
+                const response = await fetch(`${BACKEND_URL}/process`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ number: parseFloat(num) })
+                });
+
+                const data = await response.json();
+                if (response.ok && data.download_url) {
+                    // 兼容相对路径和绝对路径
+                    const fullUrl = data.download_url.startsWith('http') 
+                        ? data.download_url 
+                        : `${BACKEND_URL}${data.download_url}`;
+                    resultDiv.innerHTML = `<p class="success">✅ 生成成功！<br><a href="${fullUrl}" target="_blank" download>📥 点击下载结果文件</a></p>`;
+                } else {
+                    resultDiv.innerHTML = `<p class="error">❌ 处理失败: ${data.error || '未知错误'}</p>`;
+                }
+            } catch (err) {
+                resultDiv.innerHTML = `<p class="error">❌ 网络请求失败: ${err.message}</p>`;
+            } finally {
+                btn.disabled = false;
+                btn.textContent = '确定';
+            }
+        }
+    </script>
+</body>
+</html>
