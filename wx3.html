@@ -1,73 +1,19 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html>
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>唤起微信</title>
-  <style>
-    body {
-      font-family: system-ui, -apple-system, sans-serif;
-      text-align: center;
-      padding: 40px 20px;
-      background: #f8f9fa;
-      color: #333;
-    }
-    .btn {
-      display: inline-block;
-      padding: 14px 28px;
-      margin: 12px;
-      background: #07C160;
-      color: #fff;
-      border: none;
-      border-radius: 8px;
-      font-size: 16px;
-      text-decoration: none;
-      cursor: pointer;
-      transition: background 0.2s;
-    }
-    .btn:hover { background: #06AD56; }
-    .btn:active { transform: scale(0.98); }
-    .note {
-      max-width: 500px;
-      margin: 24px auto 0;
-      font-size: 13px;
-      color: #666;
-      line-height: 1.6;
-      background: #fff;
-      padding: 12px;
-      border-radius: 6px;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-    }
-    code { background: #eee; padding: 2px 4px; border-radius: 4px; }
-  </style>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>打开WPS</title>
 </head>
-<body>
-  <h2>微信唤起演示</h2>
-  
-  <a class="btn" href="https://www.kdocs.cn/l/cl0NjXZatWUs?f=301
-[文件]现在编辑文档测试123.docx
-可复制链接到WPS Office中打开文档">📱 手机端打开在线编辑链接</a>
-  <a class="btn" href="KingSoftOfficeApp://">💻 唤起wps</a>
+<body style="text-align: center; margin-top: 120px;">
 
-  <div class="note">
-    💡 说明：<br>
-    1. 现代浏览器禁止网页直接运行本地 <code>.exe</code> 或读取系统路径。<br>
-    2. 上方链接依赖微信客户端注册的 <code>weixin://</code> 协议，Win11 与 iOS 均原生支持。<br>
-    3. 若未安装微信或协议未注册，点击将无响应。如需跳转微信内特定页面，请使用微信开放平台官方 SDK/Universal Links。
-  </div>
+<button onclick="openWps()" style="font-size: 18px; padding: 14px 32px;">打开 WPS Office</button>
 
-  <script>
-    // 可选：点击后延迟提示（因浏览器策略无法可靠捕获 Scheme 是否成功唤起）
-    document.querySelectorAll('.btn').forEach(btn => {
-      btn.addEventListener('click', () => {
-        setTimeout(() => {
-          if (!document.hidden) {
-            // 用户未离开页面，通常表示唤起失败或未安装
-            console.log('提示：若未弹出微信，请确认已安装微信客户端。');
-          }
-        }, 1500);
-      });
-    });
-  </script>
+<script>
+function openWps() {
+  // 最稳的唤起方式（iOS 兼容最好）
+  window.location = "KingSoftOfficeApp://";
+}
+</script>
 </body>
 </html>
