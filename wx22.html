@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>打开WPS</title>
+</head>
+<body style="text-align: center; margin-top: 120px;">
+
+<button onclick="openWps()" style="font-size: 18px; padding: 14px 32px;">打开 WPS Office</button>
+
+<script>
+function openWps() {
+  // 最稳的唤起方式（iOS 兼容最好）
+  window.location = "weixin://";
+}
+</script>
+</body>
+</html>
