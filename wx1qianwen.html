@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>测试页-唤起手机本地APP</title>
+  <title>测试页</title>
   <style>
     body {
       font-family: system-ui, -apple-system, sans-serif;
@@ -42,17 +42,13 @@
   </style>
 </head>
 <body>
-  <h2>微信唤起演示</h2>
-  <a class="btn" href="weixin://">💻 唤起wps</a>
-  
-  <a class="btn" href="weixin://">📱 唤起微信</a>
+  <h2>唤起演示</h2>
+  <a class="btn" href="KingSoftOfficeApp://">💻 唤起wps</a>
+  <a class="btn" href="https://www.kdocs.cn/l/cl0NjXZatWUs?f=301[文件]现在编辑文档测试123.docx可复制链接到WPS Office中打开文档">📱 打开某个已开通在线编辑权限的wps文档</a>
 
   <div class="note">
-    💡 说明：<br>
-    1. 现代浏览器禁止网页直接运行本地 <code>.exe</code> 或读取系统路径。<br>
-    2. 上方链接依赖微信客户端注册的 <code>weixin://</code> 协议，Win11 与 iOS 均原生支持。<br>
-    3. 若未安装微信或协议未注册，点击将无响应。如需跳转微信内特定页面，请使用微信开放平台官方 SDK/Universal Links。
-  </div>
+    💡 测试：<br>
+     </div>
 
   <script>
     // 可选：点击后延迟提示（因浏览器策略无法可靠捕获 Scheme 是否成功唤起）
@@ -61,7 +57,7 @@
         setTimeout(() => {
           if (!document.hidden) {
             // 用户未离开页面，通常表示唤起失败或未安装
-            console.log('提示：若未弹出微信，请确认已安装微信客户端。');
+            console.log('提示：若未弹出微信，请确认已安装客户端。');
           }
         }, 1500);
       });
