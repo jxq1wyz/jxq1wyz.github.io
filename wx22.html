@@ -1,19 +1,54 @@
 <!DOCTYPE html>
-<html>
+<html lang="zh-CN">
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8">
+    <!-- 必须：适配苹果手机 + 微信内核 -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>打开WPS</title>
+    <style>
+        /* 极简样式 */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: #fff;
+        }
+        /* 按钮样式 */
+        #openBtn {
+            padding: 18px 50px;
+            font-size: 18px;
+            background: #007aff;
+            color: white;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            outline: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+    </style>
 </head>
-<body style="text-align: center; margin-top: 120px;">
+<body>
+    <button id="openBtn">打开WPS客户端</button>
 
-<button onclick="openWps()" style="font-size: 18px; padding: 14px 32px;">打开 weixin</button>
+    <script>
+        const btn = document.getElementById('openBtn');
+        const wpsScheme = 'KingsoftOfficeApp://';
 
-<script>
-function openWps() {
-  // 最稳的唤起方式（iOS 兼容最好）
-  window.location = "ksoapp://";
-}
-</script>
+        btn.addEventListener('click', function() {
+            // 核心：微信内防拦截 + 苹果跳转逻辑
+            window.location.href = wpsScheme;
+
+            // 备用兜底（防止被拦截时）
+            setTimeout(() => {
+                window.location.href = 'https://apps.apple.com/cn/app/wps-office/id599858933';
+            }, 800);
+        });
+    </script>
 </body>
 </html>
