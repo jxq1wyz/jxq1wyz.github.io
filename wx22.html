@@ -2,53 +2,38 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <!-- 必须 ：适配苹 果手机 + 微信内核 -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>打开WPS</title>
+    <title>唤起 WPS</title>
     <style>
-        /* 极简样式 */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
         body {
             display: flex;
             justify-content: center;
             align-items: center;
-            min-height: 100vh;
-            background: #fff;
+            height: 100vh;
+            margin: 0;
+            background-color: #f0f0f0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
         }
-        /* 按钮样式 */
-        #openBtn {
-            padding: 18px 50px;
+        .btn {
+            display: block;
+            padding: 15px 40px;
             font-size: 18px;
-            background: #007aff;
+            font-weight: bold;
             color: white;
-            border: none;
-            border-radius: 12px;
-            cursor: pointer;
-            outline: none;
-            -webkit-tap-highlight-color: transparent;
+            background-color: #d63031; /* WPS 红 */
+            border-radius: 8px;
+            text-decoration: none;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .btn:active {
+            background-color: #b71c1c;
         }
     </style>
 </head>
 <body>
-    <button id="openBtn">打开WPS客户端</button>
 
-    <script>
-        const btn = document.getElementById('openBtn');
-        const wpsScheme = 'KingsoftOfficeApp://';
+    <!-- 注意：此链接在微信浏览器内会被拦截，无法唤起 -->
+    <a href="KingsoftOfficeApp://" class="btn" id="wpsBtn">打开 WPS Office</a>
 
-        btn.addEventListener('click', function() {
-            // 核心：微信内防拦截 + 苹果跳转逻辑
-            window.location.href = wpsScheme;
-
-            // 备用兜底（防止被拦截时）
-            setTimeout(() => {
-                window.location.href = 'https://apps.apple.com/cn/app/wps-office/id599858933';
-            }, 800);
-        });
-    </script>
 </body>
 </html>
