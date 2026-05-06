@@ -3,37 +3,37 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>唤0起 WPS</title>
+    <title>一键打开APP</title>
     <style>
-        body {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-            background-color: #f0f0f0;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-        }
-        .btn {
-            display: block;
-            padding: 15px 40px;
-            font-size: 18px;
-            font-weight: bold;
-            color: white;
-            background-color: #d63031; /* WPS 红 */
-            border-radius: 8px;
-            text-decoration: none;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-        }
-        .btn:active {
-            background-color: #b71c1c;
-        }
+        * {margin:0;padding:0;box-sizing:border-box;}
+        body {padding:20px;background:#f5f5f5;}
+        .container {max-width:400px;margin:0 auto;}
+        .app-btn {width:100%;padding:16px;margin:10px 0;font-size:16px;border:none;border-radius:10px;color:white;}
+        .music {background:#e12a2a;}
+        .bdmap {background:#2d85f0;}
+        .amap {background:#1a9af7;}
+        .doubao {background:#6366f1;}
+        .feishu {background:#1377eb;}
+        .meituan {background:#ff6666;}
     </style>
 </head>
 <body>
+<div class="container">
+    <button class="app-btn music" onclick="openApp('orpheus://','https://apps.apple.com/cn/app/网易云音乐/id590336435')">网易云音乐</button>
+    <button class="app-btn bdmap" onclick="openApp('baidumap://','https://apps.apple.com/cn/app/百度地图/id452186374')">百度地图</button>
+    <button class="app-btn amap" onclick="openApp('amap://','https://apps.apple.com/cn/app/高德地图/id691592214')">高德地图</button>
+    <button class="app-btn doubao" onclick="openApp('doubao://','https://apps.apple.com/cn/app/豆包/id6446108285')">豆包</button>
+    <button class="app-btn feishu" onclick="openApp('lark://','https://apps.apple.com/cn/app/飞书/id1084366651')">飞书</button>
+    <button class="app-btn meituan" onclick="openApp('imeituan://','https://apps.apple.com/cn/app/美团/id432507289')">美团</button>
+</div>
 
-    <!-- 注意：此链接在微信浏览器内会被拦截，无法唤起 -->
-    <a href="weixin://" class="btn" id="wpsBtn">打开 W微信 e</a>
-
+<script>
+function openApp(scheme, storeUrl) {
+  window.location.href = scheme;
+  setTimeout(() => {
+    window.location.href = storeUrl;
+  }, 800);
+}
+</script>
 </body>
 </html>
