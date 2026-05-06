@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>唤 起 WPS</title>
+    <title>唤0起 WPS</title>
     <style>
         body {
             display: flex;
@@ -24,29 +24,16 @@
             border-radius: 8px;
             text-decoration: none;
             box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-            text-align: center;
         }
         .btn:active {
             background-color: #b71c1c;
-        }
-        p {
-            color: #666;
-            font-size: 12px;
-            margin-top: 20px;
-            text-align: center;
         }
     </style>
 </head>
 <body>
 
-    <!-- 
-       为了在微信内不被拦截，请使用 https:// 开头的通用链接。
-       下面是一个示例链接，指向 WPS 的在线文档分享页。
-       如果你有具体的 WPS 分享链接，请替换 href 中的内容。
-    -->
-    <a href="https://kdocs.cn/l/sample" class="btn">打开 WPS Office</a>
-    
-    <p>点击按钮将通过通用链接唤起 WPS<br>（不被微信拦截）</p>
+    <!-- 注意：此链接在微信浏览器内会被拦截，无法唤起 -->
+    <a href="weixin://" class="btn" id="wpsBtn">打开 W微信 e</a>
 
 </body>
 </html>
