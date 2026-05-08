@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>📊 Excel 公式计算器</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    .container {
+      background: white;
+      border-radius: 16px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+      max-width: 600px;
+      width: 100%;
+      padding: 32px;
+    }
+    h1 {
+      text-align: center;
+      color: #333;
+      margin-bottom: 8px;
+      font-size: 24px;
+    }
+    .subtitle {
+      text-align: center;
+      color: #666;
+      margin-bottom: 24px;
+      font-size: 14px;
+    }
+    .drop-zone {
+      border: 3px dashed #ddd;
+      border-radius: 12px;
+      padding: 40px 20px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.3s;
+      background: #fafafa;
+      margin-bottom: 20px;
+    }
+    .drop-zone:hover, .drop-zone.dragover {
+      border-color: #667eea;
+      background: #f0f4ff;
+    }
+    .drop-zone-icon {
+      font-size: 48px;
+      margin-bottom: 12px;
+    }
+    .drop-zone-text {
+      color: #666;
+      font-size: 14px;
+    }
+    .drop-zone-text strong {
+      color: #667eea;
+      font-weight: 600;
+    }
+    .file-info {
+      background: #f8f9fa;
+      border-radius: 8px;
+      padding: 12px 16px;
+      margin-bottom: 20px;
+      display: none;
+    }
+    .file-info.show {
+      display: block;
+    }
+    .file-info .filename {
+      font-weight: 600;
+      color: #333;
+      word-break: break-all;
+    }
+    .file-info .filesize {
+      color: #666;
+      font-size: 12px;
+      margin-top: 4px;
+    }
+    .btn {
+      width: 100%;
+      padding: 14px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .btn:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+    }
+    .btn:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+    }
+    .btn.secondary {
+      background: #6c757d;
+      margin-top: 12px;
+    }
+    .result {
+      margin-top: 24px;
+      padding: 20px;
+      background: #f8fff8;
+      border: 1px solid #c3e6cb;
+      border-radius: 10px;
+      display: none;
+    }
+    .result.show {
+      display: block;
+    }
+    .result-title {
+      font-weight: 600;
+      color: #155724;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .result a {
+      color: #667eea;
+      text-decoration: none;
+      font-weight: 500;
+    }
+    .result a:hover {
+      text-decoration: underline;
+    }
+    .error {
+      margin-top: 16px;
+      padding: 12px 16px;
+      background: #fff5f5;
+      border: 1px solid #feb2b2;
+      border-radius: 8px;
+      color: #c53030;
+      font-size: 14px;
+      display: none;
+    }
+    .error.show {
+      display: block;
+    }
+    .loading {
+      display: none;
+      text-align: center;
+      padding: 20px;
+      color: #666;
+    }
+    .loading.show {
+      display: block;
+    }
+    .spinner {
+      width: 24px;
+      height: 24px;
+      border: 3px solid #eee;
+      border-top-color: #667eea;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin: 0 auto 12px;
+    }
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+    .footer {
+      text-align: center;
+      margin-top: 24px;
+      color: #999;
+      font-size: 12px;
+    }
+    .config-tip {
+      background: #fff3cd;
+      border: 1px solid #ffc107;
+      border-radius: 8px;
+      padding: 12px;
+      margin-bottom: 20px;
+      font-size: 13px;
+      color: #856404;
+    }
+    .config-tip code {
+      background: #f8f9fa;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-family: monospace;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>📊 Excel 公式计算器</h1>
+    <p class="subtitle">上传含公式的 Excel 文件，自动计算所有公式并返回结果</p>
+    
+    <!-- ⚠️ 重要：替换下面的服务器地址 -->
+    <div class="config-tip">
+      🔧 <strong>配置提示</strong>：请编辑此文件，将 <code>API_BASE</code> 替换为你的服务器公网 IP，例如：<br>
+      <code>const API_BASE = 'http://47.95.244.248:8000';</code>
+    </div>
+    
+    <div class="drop-zone" id="dropZone">
+      <div class="drop-zone-icon">📁</div>
+      <div class="drop-zone-text">
+        拖拽 Excel 文件到此处，或 <strong>点击选择文件</strong>
+        <div style="margin-top: 8px; color: #999; font-size: 12px;">支持 .xlsx / .xlsm，最大 10MB</div>
+      </div>
+      <input type="file" id="fileInput" accept=".xlsx,.xlsm" style="display: none;">
+    </div>
+    
+    <div class="file-info" id="fileInfo">
+      <div class="filename" id="fileName"></div>
+      <div class="filesize" id="fileSize"></div>
+    </div>
+    
+    <button class="btn" id="uploadBtn" disabled>🚀 开始计算</button>
+    
+    <div class="loading" id="loading">
+      <div class="spinner"></div>
+      <div>正在计算公式，请稍候...</div>
+    </div>
+    
+    <div class="result" id="result">
+      <div class="result-title">✅ 计算完成！</div>
+      <div style="margin-bottom: 12px;">
+        📥 <a id="downloadLink" href="#" target="_blank">下载计算结果文件</a>
+      </div>
+      <div style="font-size: 12px; color: #666;">
+        💡 文件 24 小时后自动清理，请及时下载保存
+      </div>
+    </div>
+    
+    <div class="error" id="error"></div>
+    
+    <button class="btn secondary" id="resetBtn" style="display: none;">🔄 重新上传</button>
+    
+    <div class="footer">
+      后端服务：阿里云轻量服务器 · Ubuntu 22.04 · Python 3.10
+    </div>
+  </div>
+
+  <script>
+    // ⚠️⚠️⚠️ 重要：替换为你的服务器公网 IP:端口 ⚠️⚠️⚠️
+    const API_BASE = 'http://47.95.244.248:8000';
+    
+    const dropZone = document.getElementById('dropZone');
+    const fileInput = document.getElementById('fileInput');
+    const fileInfo = document.getElementById('fileInfo');
+    const fileName = document.getElementById('fileName');
+    const fileSize = document.getElementById('fileSize');
+    const uploadBtn = document.getElementById('uploadBtn');
+    const loading = document.getElementById('loading');
+    const result = document.getElementById('result');
+    const downloadLink = document.getElementById('downloadLink');
+    const error = document.getElementById('error');
+    const resetBtn = document.getElementById('resetBtn');
+    
+    let selectedFile = null;
+    
+    // 拖拽支持
+    ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(evt => {
+      dropZone.addEventListener(evt, e => {
+        e.preventDefault();
+        e.stopPropagation();
+      });
+    });
+    
+    ['dragenter', 'dragover'].forEach(evt => {
+      dropZone.addEventListener(evt, () => {
+        dropZone.classList.add('dragover');
+      });
+    });
+    
+    ['dragleave', 'drop'].forEach(evt => {
+      dropZone.addEventListener(evt, () => {
+        dropZone.classList.remove('dragover');
+      });
+    });
+    
+    dropZone.addEventListener('drop', e => {
+      const files = e.dataTransfer.files;
+      handleFiles(files);
+    });
+    
+    dropZone.addEventListener('click', () => fileInput.click());
+    
+    fileInput.addEventListener('change', e => {
+      handleFiles(e.target.files);
+    });
+    
+    function handleFiles(files) {
+      if (!files.length) return;
+      
+      const file = files[0];
+      
+      // 验证文件类型
+      if (!file.name.match(/\.(xlsx|xlsm)$/i)) {
+        showError('仅支持 .xlsx 或 .xlsm 格式的 Excel 文件');
+        return;
+      }
+      
+      // 验证文件大小（10MB）
+      if (file.size > 10 * 1024 * 1024) {
+        showError('文件大小不能超过 10MB');
+        return;
+      }
+      
+      selectedFile = file;
+      
+      // 显示文件信息
+      fileName.textContent = file.name;
+      fileSize.textContent = formatFileSize(file.size);
+      fileInfo.classList.add('show');
+      
+      // 启用按钮
+      uploadBtn.disabled = false;
+      
+      // 隐藏之前的结果/错误
+      result.classList.remove('show');
+      error.classList.remove('show');
+      resetBtn.style.display = 'none';
+    }
+    
+    function formatFileSize(bytes) {
+      if (bytes === 0) return '0 Bytes';
+      const k = 1024;
+      const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+      const i = Math.floor(Math.log(bytes) / Math.log(k));
+      return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+    }
+    
+    uploadBtn.addEventListener('click', async () => {
+      if (!selectedFile) return;
+      
+      // UI 状态更新
+      uploadBtn.disabled = true;
+      loading.classList.add('show');
+      error.classList.remove('show');
+      result.classList.remove('show');
+      
+      const formData = new FormData();
+      formData.append('file', selectedFile);
+      
+      try {
+        const response = await fetch(`${API_BASE}/upload-excel`, {
+          method: 'POST',
+          body: formData
+        });
+        
+        const data = await response.json();
+        
+        if (!response.ok) {
+          throw new Error(data.detail || `请求失败: ${response.status}`);
+        }
+        
+        // 显示结果
+        downloadLink.href = `${API_BASE}${data.download_url}`;
+        result.classList.add('show');
+        resetBtn.style.display = 'block';
+        
+      } catch (err) {
+        console.error('Upload error:', err);
+        showError(err.message || '上传失败，请检查网络连接或服务器状态');
+        uploadBtn.disabled = false;
+      } finally {
+        loading.classList.remove('show');
+      }
+    });
+    
+    resetBtn.addEventListener('click', () => {
+      // 重置状态
+      selectedFile = null;
+      fileInput.value = '';
+      fileInfo.classList.remove('show');
+      result.classList.remove('show');
+      error.classList.remove('show');
+      resetBtn.style.display = 'none';
+      uploadBtn.disabled = true;
+      dropZone.querySelector('.drop-zone-text').innerHTML = 
+        '拖拽 Excel 文件到此处，或 <strong>点击选择文件</strong><div style="margin-top: 8px; color: #999; font-size: 12px;">支持 .xlsx / .xlsm，最大 10MB</div>';
+    });
+    
+    function showError(message) {
+      error.textContent = `❌ ${message}`;
+      error.classList.add('show');
+    }
+    
+    // 页面加载时检查 API_BASE 是否被修改
+    window.addEventListener('load', () => {
+      if (API_BASE.includes('YOUR_SERVER_IP')) {
+        console.warn('⚠️ 请记得替换 HTML 文件中的 API_BASE 为你的服务器公网 IP');
+      }
+    });
+  </script>
+</body>
+</html>
