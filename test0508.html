@@ -1,401 +1,140 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Excel 公式计算器</title>
-
-    <!-- 在这里添加 favicon -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>📊 Excel 公式计算器</title>
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📊</text></svg>">
-    
-  <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      min-height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 20px;
-    }
-    .container {
-      background: white;
-      border-radius: 16px;
-      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-      max-width: 600px;
-      width: 100%;
-      padding: 32px;
-    }
-    h1 {
-      text-align: center;
-      color: #333;
-      margin-bottom: 8px;
-      font-size: 24px;
-    }
-    .subtitle {
-      text-align: center;
-      color: #666;
-      margin-bottom: 24px;
-      font-size: 14px;
-    }
-    .drop-zone {
-      border: 3px dashed #ddd;
-      border-radius: 12px;
-      padding: 40px 20px;
-      text-align: center;
-      cursor: pointer;
-      transition: all 0.3s;
-      background: #fafafa;
-      margin-bottom: 20px;
-    }
-    .drop-zone:hover, .drop-zone.dragover {
-      border-color: #667eea;
-      background: #f0f4ff;
-    }
-    .drop-zone-icon {
-      font-size: 48px;
-      margin-bottom: 12px;
-    }
-    .drop-zone-text {
-      color: #666;
-      font-size: 14px;
-    }
-    .drop-zone-text strong {
-      color: #667eea;
-      font-weight: 600;
-    }
-    .file-info {
-      background: #f8f9fa;
-      border-radius: 8px;
-      padding: 12px 16px;
-      margin-bottom: 20px;
-      display: none;
-    }
-    .file-info.show {
-      display: block;
-    }
-    .file-info .filename {
-      font-weight: 600;
-      color: #333;
-      word-break: break-all;
-    }
-    .file-info .filesize {
-      color: #666;
-      font-size: 12px;
-      margin-top: 4px;
-    }
-    .btn {
-      width: 100%;
-      padding: 14px;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      color: white;
-      border: none;
-      border-radius: 10px;
-      font-size: 16px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: transform 0.2s, box-shadow 0.2s;
-    }
-    .btn:hover:not(:disabled) {
-      transform: translateY(-2px);
-      box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
-    }
-    .btn:disabled {
-      background: #ccc;
-      cursor: not-allowed;
-    }
-    .btn.secondary {
-      background: #6c757d;
-      margin-top: 12px;
-    }
-    .result {
-      margin-top: 24px;
-      padding: 20px;
-      background: #f8fff8;
-      border: 1px solid #c3e6cb;
-      border-radius: 10px;
-      display: none;
-    }
-    .result.show {
-      display: block;
-    }
-    .result-title {
-      font-weight: 600;
-      color: #155724;
-      margin-bottom: 12px;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-    .result a {
-      color: #667eea;
-      text-decoration: none;
-      font-weight: 500;
-    }
-    .result a:hover {
-      text-decoration: underline;
-    }
-    .error {
-      margin-top: 16px;
-      padding: 12px 16px;
-      background: #fff5f5;
-      border: 1px solid #feb2b2;
-      border-radius: 8px;
-      color: #c53030;
-      font-size: 14px;
-      display: none;
-    }
-    .error.show {
-      display: block;
-    }
-    .loading {
-      display: none;
-      text-align: center;
-      padding: 20px;
-      color: #666;
-    }
-    .loading.show {
-      display: block;
-    }
-    .spinner {
-      width: 24px;
-      height: 24px;
-      border: 3px solid #eee;
-      border-top-color: #667eea;
-      border-radius: 50%;
-      animation: spin 1s linear infinite;
-      margin: 0 auto 12px;
-    }
-    @keyframes spin {
-      to { transform: rotate(360deg); }
-    }
-    .footer {
-      text-align: center;
-      margin-top: 24px;
-      color: #999;
-      font-size: 12px;
-    }
-    .config-tip {
-      background: #fff3cd;
-      border: 1px solid #ffc107;
-      border-radius: 8px;
-      padding: 12px;
-      margin-bottom: 20px;
-      font-size: 13px;
-      color: #856404;
-    }
-    .config-tip code {
-      background: #f8f9fa;
-      padding: 2px 6px;
-      border-radius: 4px;
-      font-family: monospace;
-    }
-  </style>
+    <style>
+        .container { max-width: 600px; margin: 40px auto; padding: 24px; background: #fff; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+        h1 { text-align: center; color: #333; margin-bottom: 24px; }
+        .form-group { margin-bottom: 16px; }
+        .form-group label { display: block; margin-bottom: 6px; font-weight: bold; color: #555; }
+        .form-group input, .form-group select { width: 100%; padding: 8px 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 14px; }
+        .form-group input[readonly] { background-color: #f5f5f5; cursor: not-allowed; }
+        .btn { display: block; width: 100%; padding: 12px; background: #4CAF50; color: #fff; border: none; border-radius: 6px; font-size: 16px; cursor: pointer; transition: background 0.2s; }
+        .btn:hover { background: #45a049; }
+        .btn:disabled { background: #ccc; cursor: not-allowed; }
+        #result-area { margin-top: 20px; }
+        #status { color: #2ecc71; display: none; margin-bottom: 8px; }
+        #download-link { color: #3498db; text-decoration: none; display: none; }
+        #download-link:hover { text-decoration: underline; }
+        #tip { color: #888; font-size: 14px; display: none; margin-top: 8px; }
+    </style>
 </head>
 <body>
-  <div class="container">
-    <h1>📊 Excel 公式计算器</h1>
-    <p class="subtitle">上传含公式的 Excel 文件，自动计算所有公式并返回结果</p>
-    
-    <!-- ⚠️ 重要：替换下面的服务器地址 -->
-    <div class="config-tip">
-      🔧 <strong>配置提示</strong>：请编辑此文件，将 <code>API_BASE</code> 替换为你的服务器公网 IP，例如：<br>
-      <code>const API_BASE = 'https://char10.top';</code>
-    </div>
-    
-    <div class="drop-zone" id="dropZone">
-      <div class="drop-zone-icon">📁</div>
-      <div class="drop-zone-text">
-        拖拽 Excel 文件到此处，或 <strong>点击选择文件</strong>
-        <div style="margin-top: 8px; color: #999; font-size: 12px;">支持 .xlsx / .xlsm，最大 10MB</div>
-      </div>
-      <input type="file" id="fileInput" accept=".xlsx,.xlsm" style="display: none;">
-    </div>
-    
-    <div class="file-info" id="fileInfo">
-      <div class="filename" id="fileName"></div>
-      <div class="filesize" id="fileSize"></div>
-    </div>
-    
-    <button class="btn" id="uploadBtn" disabled>🚀 开始计算</button>
-    
-    <div class="loading" id="loading">
-      <div class="spinner"></div>
-      <div>正在计算公式，请稍候...</div>
-    </div>
-    
-    <div class="result" id="result">
-      <div class="result-title">✅ 计算完成！</div>
-      <div style="margin-bottom: 12px;">
-        📥 <a id="downloadLink" href="#" target="_blank">下载计算结果文件</a>
-      </div>
-      <div style="font-size: 12px; color: #666;">
-        💡 文件 24 小时后自动清理，请及时下载保存
-      </div>
-    </div>
-    
-    <div class="error" id="error"></div>
-    
-    <button class="btn secondary" id="resetBtn" style="display: none;">🔄 重新上传</button>
-    
-    <div class="footer">
-      后端服务：aly轻量服务器 · Ubuntu 22.04 · Python 3.10
-    </div>
-  </div>
+    <div class="container">
+        <h1>📊 Excel 公式计算器</h1>
+        <p>选择模板 → 填写数据 → 自动计算并生成结果文件</p>
 
-  <script>
-    // ⚠️⚠️⚠️ 重要：替换为你的服务器公网 IP:端口 ⚠️⚠️⚠️
-    const API_BASE = 'https://char10.top';
-    
-    const dropZone = document.getElementById('dropZone');
-    const fileInput = document.getElementById('fileInput');
-    const fileInfo = document.getElementById('fileInfo');
-    const fileName = document.getElementById('fileName');
-    const fileSize = document.getElementById('fileSize');
-    const uploadBtn = document.getElementById('uploadBtn');
-    const loading = document.getElementById('loading');
-    const result = document.getElementById('result');
-    const downloadLink = document.getElementById('downloadLink');
-    const error = document.getElementById('error');
-    const resetBtn = document.getElementById('resetBtn');
-    
-    let selectedFile = null;
-    
-    // 拖拽支持
-    ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(evt => {
-      dropZone.addEventListener(evt, e => {
-        e.preventDefault();
-        e.stopPropagation();
-      });
-    });
-    
-    ['dragenter', 'dragover'].forEach(evt => {
-      dropZone.addEventListener(evt, () => {
-        dropZone.classList.add('dragover');
-      });
-    });
-    
-    ['dragleave', 'drop'].forEach(evt => {
-      dropZone.addEventListener(evt, () => {
-        dropZone.classList.remove('dragover');
-      });
-    });
-    
-    dropZone.addEventListener('drop', e => {
-      const files = e.dataTransfer.files;
-      handleFiles(files);
-    });
-    
-    dropZone.addEventListener('click', () => fileInput.click());
-    
-    fileInput.addEventListener('change', e => {
-      handleFiles(e.target.files);
-    });
-    
-    function handleFiles(files) {
-      if (!files.length) return;
-      
-      const file = files[0];
-      
-      // 验证文件类型
-      if (!file.name.match(/\.(xlsx|xlsm)$/i)) {
-        showError('仅支持 .xlsx 或 .xlsm 格式的 Excel 文件');
-        return;
-      }
-      
-      // 验证文件大小（10MB）
-      if (file.size > 10 * 1024 * 1024) {
-        showError('文件大小不能超过 10MB');
-        return;
-      }
-      
-      selectedFile = file;
-      
-      // 显示文件信息
-      fileName.textContent = file.name;
-      fileSize.textContent = formatFileSize(file.size);
-      fileInfo.classList.add('show');
-      
-      // 启用按钮
-      uploadBtn.disabled = false;
-      
-      // 隐藏之前的结果/错误
-      result.classList.remove('show');
-      error.classList.remove('show');
-      resetBtn.style.display = 'none';
-    }
-    
-    function formatFileSize(bytes) {
-      if (bytes === 0) return '0 Bytes';
-      const k = 1024;
-      const sizes = ['Bytes', 'KB', 'MB', 'GB'];
-      const i = Math.floor(Math.log(bytes) / Math.log(k));
-      return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
-    }
-    
-    uploadBtn.addEventListener('click', async () => {
-      if (!selectedFile) return;
-      
-      // UI 状态更新
-      uploadBtn.disabled = true;
-      loading.classList.add('show');
-      error.classList.remove('show');
-      result.classList.remove('show');
-      
-      const formData = new FormData();
-      formData.append('file', selectedFile);
-      
-      try {
-        const response = await fetch(`${API_BASE}/upload-excel`, {
-          method: 'POST',
-          body: formData
+        <!-- 模板选择 -->
+        <div class="form-group">
+            <label for="template-select">选择模板：</label>
+            <select id="template-select">
+                <option value="TEST343.xlsx">TEST343.xlsx</option>
+                <option value="TEST555.xlsx">TEST555.xlsx</option>
+            </select>
+        </div>
+
+        <!-- 第一组数据 -->
+        <div class="form-group">
+            <h4>第一组数据</h4>
+            <input type="text" id="group1-workbook" placeholder="目标工作簿（默认同模板）" value="TEST343.xlsx" readonly>
+            <input type="text" id="group1-sheet" placeholder="目标工作表名称" required>
+            <input type="text" id="group1-cell" placeholder="目标单元格（如 A1）" required>
+            <input type="text" id="group1-value" placeholder="要填入的值" required>
+        </div>
+
+        <!-- 第二组数据 -->
+        <div class="form-group">
+            <h4>第二组数据</h4>
+            <input type="text" id="group2-workbook" placeholder="目标工作簿（默认同模板）" value="TEST555.xlsx" readonly>
+            <input type="text" id="group2-sheet" placeholder="目标工作表名称" required>
+            <input type="text" id="group2-cell" placeholder="目标单元格（如 B2）" required>
+            <input type="text" id="group2-value" placeholder="要填入的值" required>
+        </div>
+
+        <button id="calculate-btn" class="btn">🚀 开始计算</button>
+
+        <div id="result-area">
+            <div id="status">✅ 计算完成！</div>
+            <a id="download-link" href="#">📥 下载计算结果文件</a>
+            <p id="tip">💡 文件 24 小时后自动清理，请及时下载保存</p>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = 'https://char10.top';
+        const templateSelect = document.getElementById('template-select');
+        const group1Workbook = document.getElementById('group1-workbook');
+        const group1Sheet = document.getElementById('group1-sheet');
+        const group1Cell = document.getElementById('group1-cell');
+        const group1Value = document.getElementById('group1-value');
+        const group2Workbook = document.getElementById('group2-workbook');
+        const group2Sheet = document.getElementById('group2-sheet');
+        const group2Cell = document.getElementById('group2-cell');
+        const group2Value = document.getElementById('group2-value');
+        const calculateBtn = document.getElementById('calculate-btn');
+        const status = document.getElementById('status');
+        const downloadLink = document.getElementById('download-link');
+        const tip = document.getElementById('tip');
+
+        // 模板选择联动工作簿字段
+        templateSelect.addEventListener('change', (e) => {
+            group1Workbook.value = e.target.value;
+            group2Workbook.value = e.target.value;
         });
-        
-        const data = await response.json();
-        
-        if (!response.ok) {
-          throw new Error(data.detail || `请求失败: ${response.status}`);
-        }
-        
-        // 显示结果
-        downloadLink.href = `${API_BASE}${data.download_url}`;
-        result.classList.add('show');
-        resetBtn.style.display = 'block';
-        
-      } catch (err) {
-        console.error('Upload error:', err);
-        showError(err.message || '上传失败，请检查网络连接或服务器状态');
-        uploadBtn.disabled = false;
-      } finally {
-        loading.classList.remove('show');
-      }
-    });
-    
-    resetBtn.addEventListener('click', () => {
-      // 重置状态
-      selectedFile = null;
-      fileInput.value = '';
-      fileInfo.classList.remove('show');
-      result.classList.remove('show');
-      error.classList.remove('show');
-      resetBtn.style.display = 'none';
-      uploadBtn.disabled = true;
-      dropZone.querySelector('.drop-zone-text').innerHTML = 
-        '拖拽 Excel 文件到此处，或 <strong>点击选择文件</strong><div style="margin-top: 8px; color: #999; font-size: 12px;">支持 .xlsx / .xlsm，最大 10MB</div>';
-    });
-    
-    function showError(message) {
-      error.textContent = `❌ ${message}`;
-      error.classList.add('show');
-    }
-    
-    // 页面加载时检查 API_BASE 是否被修改
-    window.addEventListener('load', () => {
-      if (API_BASE.includes('YOUR_SERVER_IP')) {
-        console.warn('⚠️ 请记得替换 HTML 文件中的 API_BASE 为你的服务器公网 IP');
-      }
-    });
-  </script>
+
+        calculateBtn.addEventListener('click', async () => {
+            const data = {
+                template: templateSelect.value,
+                group1: {
+                    workbook: group1Workbook.value,
+                    sheet: group1Sheet.value.trim(),
+                    cell: group1Cell.value.trim(),
+                    value: group1Value.value.trim()
+                },
+                group2: {
+                    workbook: group2Workbook.value,
+                    sheet: group2Sheet.value.trim(),
+                    cell: group2Cell.value.trim(),
+                    value: group2Value.value.trim()
+                }
+            };
+
+            // 校验必填字段
+            if (!data.group1.sheet || !data.group1.cell || !data.group1.value ||
+                !data.group2.sheet || !data.group2.cell || !data.group2.value) {
+                alert('请填写所有必填字段！');
+                return;
+            }
+
+            calculateBtn.disabled = true;
+            calculateBtn.textContent = '处理中...';
+
+            try {
+                const response = await fetch(`${API_BASE}/use-template`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+
+                const result = await response.json();
+                if (response.ok) {
+                    status.style.display = 'block';
+                    downloadLink.href = `${API_BASE}${result.download_url}`;
+                    downloadLink.style.display = 'block';
+                    tip.style.display = 'block';
+                } else {
+                    alert(`错误：${result.detail || '请求失败'}`);
+                }
+            } catch (error) {
+                alert(`请求异常：${error.message}`);
+            } finally {
+                calculateBtn.disabled = false;
+                calculateBtn.textContent = '🚀 开始计算';
+            }
+        });
+    </script>
 </body>
 </html>
