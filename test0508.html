@@ -4,137 +4,216 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>📊 Excel 公式计算器</title>
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📊</text></svg>">
     <style>
-        .container { max-width: 600px; margin: 40px auto; padding: 24px; background: #fff; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
-        h1 { text-align: center; color: #333; margin-bottom: 24px; }
-        .form-group { margin-bottom: 16px; }
-        .form-group label { display: block; margin-bottom: 6px; font-weight: bold; color: #555; }
-        .form-group input, .form-group select { width: 100%; padding: 8px 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 14px; }
-        .form-group input[readonly] { background-color: #f5f5f5; cursor: not-allowed; }
-        .btn { display: block; width: 100%; padding: 12px; background: #4CAF50; color: #fff; border: none; border-radius: 6px; font-size: 16px; cursor: pointer; transition: background 0.2s; }
-        .btn:hover { background: #45a049; }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px; }
+        .container { background: white; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); max-width: 600px; width: 100%; padding: 32px; }
+        h1 { text-align: center; color: #333; margin-bottom: 10px; font-size: 24px; }
+        p.subtitle { text-align: center; color: #666; margin-bottom: 24px; font-size: 14px; }
+        .tabs { display: flex; border-bottom: 2px solid #eee; margin-bottom: 20px; }
+        .tab { padding: 10px 20px; cursor: pointer; color: #666; font-weight: 500; }
+        .tab.active { color: #764ba2; border-bottom: 2px solid #764ba2; margin-bottom: -2px; }
+        .content { display: none; }
+        .content.active { display: block; }
+        .drop-zone { border: 2px dashed #ddd; border-radius: 12px; padding: 40px; text-align: center; cursor: pointer; transition: all 0.3s; background: #f9f9f9; }
+        .drop-zone:hover { border-color: #764ba2; background: #f0f0ff; }
+        .drop-zone.dragover { border-color: #764ba2; background: #e0e0ff; }
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; margin-bottom: 5px; font-weight: bold; color: #444; font-size: 14px; }
+        .form-group input, .form-group select { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; font-size: 14px; }
+        .group-box { background: #f8f9fa; border: 1px solid #e9ecef; border-radius: 8px; padding: 15px; margin-bottom: 15px; }
+        .group-box h4 { margin: 0 0 10px 0; color: #555; font-size: 16px; border-bottom: 1px solid #ddd; padding-bottom: 5px; }
+        .btn { width: 100%; padding: 12px; background: #764ba2; color: white; border: none; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; transition: background 0.3s; }
+        .btn:hover { background: #5a3780; }
         .btn:disabled { background: #ccc; cursor: not-allowed; }
-        #result-area { margin-top: 20px; }
-        #status { color: #2ecc71; display: none; margin-bottom: 8px; }
-        #download-link { color: #3498db; text-decoration: none; display: none; }
-        #download-link:hover { text-decoration: underline; }
-        #tip { color: #888; font-size: 14px; display: none; margin-top: 8px; }
+        .result { margin-top: 20px; text-align: center; display: none; }
+        .result.success { display: block; }
+        .result p { color: #28a745; font-weight: bold; }
+        .result a { color: #764ba2; text-decoration: none; font-weight: bold; }
+        .result .timer { color: #888; font-size: 12px; margin-top: 5px; }
+        .error { color: #dc3545; text-align: center; margin-top: 10px; font-size: 14px; display: none; }
     </style>
 </head>
 <body>
     <div class="container">
         <h1>📊 Excel 公式计算器</h1>
-        <p>选择模板 → 填写数据 → 自动计算并生成结果文件</p>
-
-        <!-- 模板选择 -->
-        <div class="form-group">
-            <label for="template-select">选择模板：</label>
-            <select id="template-select">
-                <option value="TEST343.xlsx">TEST343.xlsx</option>
-                <option value="TEST555.xlsx">TEST555.xlsx</option>
-            </select>
+        <p class="subtitle">支持模板填充与直接文件计算</p>
+        
+        <div class="tabs">
+            <div class="tab active" onclick="switchTab('template')">模板填充模式</div>
+            <div class="tab" onclick="switchTab('upload')">文件上传模式</div>
         </div>
 
-        <!-- 第一组数据 -->
-        <div class="form-group">
-            <h4>第一组数据</h4>
-            <input type="text" id="group1-workbook" placeholder="目标工作簿（默认同模板）" value="TEST343.xlsx" readonly>
-            <input type="text" id="group1-sheet" placeholder="目标工作表名称" required>
-            <input type="text" id="group1-cell" placeholder="目标单元格（如 A1）" required>
-            <input type="text" id="group1-value" placeholder="要填入的值" required>
+        <!-- 模板填充模式 -->
+        <div id="tab-template" class="content active">
+            <div class="form-group">
+                <label>选择模板：</label>
+                <select id="template-select">
+                    <option value="TEST343.xlsx">TEST343.xlsx</option>
+                    <option value="TEST555.xlsx">TEST555.xlsx</option>
+                </select>
+            </div>
+
+            <div class="group-box">
+                <h4>第一组数据</h4>
+                <div class="form-group"><input type="text" id="g1-sheet" placeholder="工作表名称 (如 Sheet1)"></div>
+                <div class="form-group"><input type="text" id="g1-cell" placeholder="单元格 (如 A1)"></div>
+                <div class="form-group"><input type="text" id="g1-val" placeholder="填入的值"></div>
+            </div>
+
+            <div class="group-box">
+                <h4>第二组数据</h4>
+                <div class="form-group"><input type="text" id="g2-sheet" placeholder="工作表名称 (如 Sheet1)"></div>
+                <div class="form-group"><input type="text" id="g2-cell" placeholder="单元格 (如 B2)"></div>
+                <div class="form-group"><input type="text" id="g2-val" placeholder="填入的值"></div>
+            </div>
+
+            <button class="btn" id="btn-calc-template" onclick="calcTemplate()">🚀 开始计算</button>
         </div>
 
-        <!-- 第二组数据 -->
-        <div class="form-group">
-            <h4>第二组数据</h4>
-            <input type="text" id="group2-workbook" placeholder="目标工作簿（默认同模板）" value="TEST555.xlsx" readonly>
-            <input type="text" id="group2-sheet" placeholder="目标工作表名称" required>
-            <input type="text" id="group2-cell" placeholder="目标单元格（如 B2）" required>
-            <input type="text" id="group2-value" placeholder="要填入的值" required>
+        <!-- 文件上传模式 -->
+        <div id="tab-upload" class="content">
+            <div class="drop-zone" id="drop-zone">
+                <p>拖拽 Excel 文件到此处，或 <a href="#" id="upload-link">点击选择文件</a></p>
+                <p style="font-size:12px; color:#888;">支持 .xlsx / .xlsm，最大 10MB</p>
+                <input type="file" id="file-input" style="display:none" accept=".xlsx,.xlsm">
+            </div>
+            <div id="file-name" style="text-align:center; margin:10px 0; color:#555;"></div>
+            <button class="btn" id="btn-upload" onclick="uploadFile()" disabled>🚀 开始计算</button>
         </div>
 
-        <button id="calculate-btn" class="btn">🚀 开始计算</button>
+        <div id="error-msg" class="error"></div>
 
-        <div id="result-area">
-            <div id="status">✅ 计算完成！</div>
-            <a id="download-link" href="#">📥 下载计算结果文件</a>
-            <p id="tip">💡 文件 24 小时后自动清理，请及时下载保存</p>
+        <div id="result" class="result">
+            <p>✅ 计算完成！</p>
+            <a id="download-link" href="#" download>📥 下载计算结果文件</a>
+            <p class="timer">💡 文件 24 小时后自动清理</p>
+            <button class="btn" style="margin-top:15px; background:#6c757d;" onclick="location.reload()">🔄 重新上传</button>
         </div>
     </div>
 
     <script>
         const API_BASE = 'https://char10.top';
-        const templateSelect = document.getElementById('template-select');
-        const group1Workbook = document.getElementById('group1-workbook');
-        const group1Sheet = document.getElementById('group1-sheet');
-        const group1Cell = document.getElementById('group1-cell');
-        const group1Value = document.getElementById('group1-value');
-        const group2Workbook = document.getElementById('group2-workbook');
-        const group2Sheet = document.getElementById('group2-sheet');
-        const group2Cell = document.getElementById('group2-cell');
-        const group2Value = document.getElementById('group2-value');
-        const calculateBtn = document.getElementById('calculate-btn');
-        const status = document.getElementById('status');
-        const downloadLink = document.getElementById('download-link');
-        const tip = document.getElementById('tip');
+        let selectedFile = null;
 
-        // 模板选择联动工作簿字段
-        templateSelect.addEventListener('change', (e) => {
-            group1Workbook.value = e.target.value;
-            group2Workbook.value = e.target.value;
-        });
+        function switchTab(tab) {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.content').forEach(c => c.classList.remove('active'));
+            document.querySelector(`.tab:nth-child(${tab === 'template' ? 1 : 2})`).classList.add('active');
+            document.getElementById(`tab-${tab}`).classList.add('active');
+            document.getElementById('result').style.display = 'none';
+            hideError();
+        }
 
-        calculateBtn.addEventListener('click', async () => {
-            const data = {
-                template: templateSelect.value,
-                group1: {
-                    workbook: group1Workbook.value,
-                    sheet: group1Sheet.value.trim(),
-                    cell: group1Cell.value.trim(),
-                    value: group1Value.value.trim()
-                },
-                group2: {
-                    workbook: group2Workbook.value,
-                    sheet: group2Sheet.value.trim(),
-                    cell: group2Cell.value.trim(),
-                    value: group2Value.value.trim()
-                }
+        function showError(msg) {
+            const el = document.getElementById('error-msg');
+            el.textContent = msg;
+            el.style.display = 'block';
+        }
+
+        function hideError() {
+            document.getElementById('error-msg').style.display = 'none';
+        }
+
+        // 模板计算逻辑
+        async function calcTemplate() {
+            const btn = document.getElementById('btn-calc-template');
+            const template = document.getElementById('template-select').value;
+            
+            const group1 = {
+                sheet: document.getElementById('g1-sheet').value,
+                cell: document.getElementById('g1-cell').value,
+                value: document.getElementById('g1-val').value
+            };
+            const group2 = {
+                sheet: document.getElementById('g2-sheet').value,
+                cell: document.getElementById('g2-cell').value,
+                value: document.getElementById('g2-val').value
             };
 
-            // 校验必填字段
-            if (!data.group1.sheet || !data.group1.cell || !data.group1.value ||
-                !data.group2.sheet || !data.group2.cell || !data.group2.value) {
-                alert('请填写所有必填字段！');
+            if (!group1.sheet || !group1.cell || !group1.value) {
+                showError("请填写第一组数据");
                 return;
             }
 
-            calculateBtn.disabled = true;
-            calculateBtn.textContent = '处理中...';
+            btn.disabled = true;
+            btn.textContent = "处理中...";
+            hideError();
 
             try {
                 const response = await fetch(`${API_BASE}/use-template`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(data)
+                    body: JSON.stringify({ template, group1, group2 })
                 });
 
-                const result = await response.json();
-                if (response.ok) {
-                    status.style.display = 'block';
-                    downloadLink.href = `${API_BASE}${result.download_url}`;
-                    downloadLink.style.display = 'block';
-                    tip.style.display = 'block';
-                } else {
-                    alert(`错误：${result.detail || '请求失败'}`);
-                }
-            } catch (error) {
-                alert(`请求异常：${error.message}`);
+                if (!response.ok) throw new Error("服务器处理失败");
+                const data = await response.json();
+                
+                showResult(data.download_url);
+            } catch (e) {
+                showError("请求异常: " + e.message);
             } finally {
-                calculateBtn.disabled = false;
-                calculateBtn.textContent = '🚀 开始计算';
+                btn.disabled = false;
+                btn.textContent = "🚀 开始计算";
             }
+        }
+
+        // 文件上传逻辑
+        const dropZone = document.getElementById('drop-zone');
+        const fileInput = document.getElementById('file-input');
+        
+        dropZone.addEventListener('click', () => fileInput.click());
+        dropZone.addEventListener('dragover', (e) => { e.preventDefault(); dropZone.classList.add('dragover'); });
+        dropZone.addEventListener('dragleave', () => dropZone.classList.remove('dragover'));
+        dropZone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            dropZone.classList.remove('dragover');
+            if (e.dataTransfer.files.length) handleFile(e.dataTransfer.files[0]);
         });
+        fileInput.addEventListener('change', (e) => { if (e.target.files.length) handleFile(e.target.files[0]); });
+
+        function handleFile(file) {
+            selectedFile = file;
+            document.getElementById('file-name').textContent = `已选择: ${file.name}`;
+            document.getElementById('btn-upload').disabled = false;
+            hideError();
+        }
+
+        async function uploadFile() {
+            if (!selectedFile) return;
+            const btn = document.getElementById('btn-upload');
+            btn.disabled = true;
+            btn.textContent = "计算中...";
+            hideError();
+
+            const formData = new FormData();
+            formData.append('file', selectedFile);
+
+            try {
+                const response = await fetch(`${API_BASE}/upload-excel`, {
+                    method: 'POST',
+                    body: formData
+                });
+
+                if (!response.ok) throw new Error("服务器处理失败");
+                const data = await response.json();
+                showResult(data.download_url);
+            } catch (e) {
+                showError("请求异常: " + e.message);
+            } finally {
+                btn.disabled = false;
+                btn.textContent = "🚀 开始计算";
+            }
+        }
+
+        function showResult(url) {
+            document.getElementById('tab-template').classList.remove('active');
+            document.getElementById('tab-upload').classList.remove('active');
+            const resDiv = document.getElementById('result');
+            resDiv.style.display = 'block';
+            resDiv.classList.add('success');
+            document.getElementById('download-link').href = `${API_BASE}${url}`;
+        }
     </script>
 </body>
 </html>
