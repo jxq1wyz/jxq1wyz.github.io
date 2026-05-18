@@ -4,7 +4,6 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>报价需求表单</title>
-  <!-- SurveyJS CSS -->
   <link href="https://cdn.jsdelivr.net/npm/survey-core@2.5.24/survey-core.min.css" rel="stylesheet">
   <style>
     body {
@@ -29,12 +28,13 @@
   <div id="surveyContainer"></div>
 </div>
 
-<!-- SurveyJS Libraries -->
 <script src="https://cdn.jsdelivr.net/npm/survey-core@2.5.24/survey.core.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/survey-js-ui@2.5.24/survey-js-ui.min.js"></script>
 
 <script>
-window.addEventListener('DOMContentLoaded', function() {
+(function() {
+  'use strict';
+
   const surveyJson = {
     "title": "报价需求",
     "description": "请填写报价需求",
@@ -258,43 +258,56 @@ window.addEventListener('DOMContentLoaded', function() {
     "headerView": "advanced"
   };
 
-  // 检查SurveyJS是否加载成功
-  if (typeof Survey === 'undefined') {
-    console.error('❌ SurveyJS库未加载！请检查网络连接或CDN链接。');
-    document.getElementById('surveyContainer').innerHTML = 
-      '<div style="color: red; padding: 20px; text-align: center;">' +
-      '❌ 表单库加载失败，请检查网络连接<br>' +
-      '<small>如果问题持续，请尝试刷新页面或使用本地服务器访问</small>' +
-      '</div>';
-    return;
+  // 等待DOM完全加载
+  function initSurvey() {
+    if (typeof Survey === 'undefined') {
+      console.error('❌ SurveyJS库未加载');
+      document.getElementById('surveyContainer').innerHTML = 
+        '<div style="color: red; padding: 20px; text-align: center;">表单库加载失败</div>';
+      return;
+    }
+
+    const container = document.getElementById('surveyContainer');
+    if (!container) {
+      console.error('❌ 找不到容器元素');
+      return;
+    }
+
+    try {
+      // 创建Survey模型
+      const survey = new Survey.Model(surveyJson);
+      
+      // 安全地添加事件监听
+      if (survey.onComplete) {
+        survey.onComplete.add(function(sender) {
+          console.log('✅ 表单数据:', JSON.stringify(sender.data, null, 2));
+          alert('提交成功！数据已输出到控制台');
+        });
+      }
+
+      if (survey.onError) {
+        survey.onError.add(function(sender, options) {
+          console.error('表单错误:', options.error);
+        });
+      }
+      
+      // 渲染表单
+      survey.render(container);
+      console.log('✅ Survey表单初始化成功');
+      
+    } catch (error) {
+      console.error('❌ 初始化Survey时出错:', error);
+    }
   }
 
-  console.log('✅ SurveyJS加载成功');
-
-  // 创建Survey模型
-  const survey = new Survey.Model(surveyJson);
-  
-  // 获取容器元素
-  const container = document.getElementById('surveyContainer');
-  
-  // 使用正确的渲染方式
-  if (container) {
-    survey.render(container);
+  // 确保DOM加载完成后执行
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initSurvey);
   } else {
-    console.error('❌ 找不到容器元素 surveyContainer');
+    // DOM已经加载完成
+    setTimeout(initSurvey, 100);
   }
-
-  // 处理表单完成
-  survey.onComplete.add(function(sender) {
-    console.log('✅ 表单数据:', JSON.stringify(sender.data, null, 2));
-    alert('提交成功！数据已输出到控制台');
-  });
-
-  // 处理错误
-  survey.onError.add(function(sender, options) {
-    console.error('表单错误:', options.error);
-  });
-});
+})();
 </script>
 
 </body>
